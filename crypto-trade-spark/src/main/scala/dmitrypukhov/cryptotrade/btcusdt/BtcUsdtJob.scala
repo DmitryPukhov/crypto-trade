@@ -62,7 +62,7 @@ object BtcUsdtJob {
     props.put("user",jdbcUser)
     props.put("password",jdbcPassword)
     spark.read.table(processedTable)
-      .write.jdbc(url = jdbcUri, table=baseTable, connectionProperties = props)
+      .write.mode(SaveMode.Overwrite).jdbc(url = jdbcUri, table=baseTable, connectionProperties = props)
 
     spark.read.jdbc(url = jdbcUri, table=baseTable, properties = props).show()
 
