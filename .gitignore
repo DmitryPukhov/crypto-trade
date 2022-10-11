@@ -1,0 +1,20 @@
+.idea
+metastore_db
+spark-warehouse
+derby.log
+data/raw
+target
+
+*.tfvars
+.terraform.*
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+*.pem
+*.jar
+*.iml
+.bsp
+# Configs with current environment
+application.dev.conf
+devops/deploy/application.properties.template
+devops/deploy/application.properties
