@@ -1,8 +1,16 @@
-variable "oauth_token" {}
-variable "cloud_id" {}
-variable "folder_id" {}
-variable "psql_pwd" {}
-variable hadoop_public_key_file {}
+#############################################################
+# Variables to be set in main.auto.tfvars file
+#############################################################
+variable "oauth_token" { default = "<please set the value in file main.auto.tfvars>" }
+variable "cloud_id" { default = "<please set the value in file main.auto.tfvars>" }
+variable "folder_id" { default = "<please set the value in file main.auto.tfvars>" }
+variable "psql_pwd" { default = "<please set the value in file main.auto.tfvars>" }
+variable hadoop_public_key_file { default = "<please set the value in file main.auto.tfvars>" }
+
+
+#############################################################
+# Global vars
+#############################################################
 # On/off components creation for dev
 variable is_hadoop { default = 1 }
 variable is_bucket { default = 1 }

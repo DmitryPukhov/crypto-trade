@@ -1,10 +1,10 @@
 #############################################################
 # Hadoop cluster
 #############################################################
-resource "yandex_dataproc_cluster" "crypto-trade-hadoop" {
+resource "yandex_dataproc_cluster" "cryptotrade-hadoop" {
   count =  var.is_hadoop
   bucket             = local.bucket_name
-  name               = "crypto-trade-hadoop"
+  name               = "cryptotrade-hadoop"
   description        = "Crypto trade hadoop cluster"
   service_account_id = yandex_iam_service_account.sa-hadoop.id
   zone_id            = local.hadoop_zone_id
@@ -25,7 +25,7 @@ resource "yandex_dataproc_cluster" "crypto-trade-hadoop" {
       role = "MASTERNODE"
 
       resources {
-        resource_preset_id = "s2.micro"
+        resource_preset_id = "b2.small"
         disk_type_id       = "network-hdd"
         disk_size          = 20
 
@@ -37,7 +37,7 @@ resource "yandex_dataproc_cluster" "crypto-trade-hadoop" {
       name = "hadoop-compute-node"
       role = "COMPUTENODE"
       resources {
-        resource_preset_id = "s2.micro" # 2 vCPU, 8 GB RAM
+        resource_preset_id = "b2.small" # 2 vCPU, 8 GB RAM
         disk_type_id       = "network-hdd"
         disk_size          = 20 # GB
       }

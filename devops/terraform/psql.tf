@@ -1,11 +1,11 @@
-resource "yandex_mdb_postgresql_cluster" "pgsql" {
+resource "yandex_mdb_postgresql_cluster" "cryptotrade-psql" {
   count              = var.is_pgsql
   name               = "cryptotrade"
 
   environment        = "PRESTABLE"
   network_id         = yandex_vpc_network.hadoop-network.id
   security_group_ids = [
-    yandex_vpc_security_group.pgsql-sg[count.index].id, yandex_vpc_security_group.sg-hadoop-cluster.id
+    yandex_vpc_security_group.sg-psql[count.index].id, yandex_vpc_security_group.sg-hadoop-cluster.id
   ]
   deletion_protection = false
 
@@ -22,14 +22,14 @@ resource "yandex_mdb_postgresql_cluster" "pgsql" {
     version = 14
 
     resources {
-      resource_preset_id = "s2.micro"
-      disk_type_id       = "network-ssd"
-      disk_size          = "20"
+      resource_preset_id = "b2.nano"
+      disk_type_id       = "network-hdd"
+      disk_size          = "10"
     }
   }
 
   host {
-    name      = "cryptotrade"
+    name      = "cryptotrade-psql"
     zone      = local.hadoop_zone_id
     subnet_id = yandex_vpc_subnet.hadoop-subnet-ru-central-1b.id
     assign_public_ip = true

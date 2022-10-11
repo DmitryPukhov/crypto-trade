@@ -3,7 +3,7 @@
 #############################################################
 # Hadoop account
 resource "yandex_iam_service_account" "sa-hadoop" {
-  name        = "crytrade-hadoop"
+  name        = "cryptotrade-hadoop"
   description = "Hadoop service account"
 }
 

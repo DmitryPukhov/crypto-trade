@@ -63,10 +63,10 @@ resource "yandex_vpc_security_group" "sg-nat-instance" {
 # Postgresql sg
 ######################################################
 
-resource "yandex_vpc_security_group" "pgsql-sg" {
+resource "yandex_vpc_security_group" "sg-psql" {
   count = var.is_pgsql
 
-  name       = "pgsql-sg"
+  name       = "sg-psql"
   network_id = yandex_vpc_network.hadoop-network.id
 
   ingress {
