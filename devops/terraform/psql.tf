@@ -1,6 +1,6 @@
 resource "yandex_mdb_postgresql_cluster" "cryptotrade-psql" {
   count              = var.is_pgsql
-  name               = "cryptotrade"
+  name               = "cryptotrade-psql"
 
   environment        = "PRESTABLE"
   network_id         = yandex_vpc_network.hadoop-network.id
