@@ -1,1 +1,1 @@
-# crypto-trade
+# Experiments with Hadoop in clouds
