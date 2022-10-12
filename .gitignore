@@ -4,6 +4,7 @@ spark-warehouse
 derby.log
 data
 target
+production
 
 *.tfvars
 .terraform.*
