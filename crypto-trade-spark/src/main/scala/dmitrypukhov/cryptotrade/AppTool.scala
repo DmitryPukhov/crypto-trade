@@ -1,8 +1,10 @@
 package dmitrypukhov.cryptotrade
 
 import com.typesafe.config.{ConfigFactory, ConfigParseOptions}
+import org.apache.log4j.Logger
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+
 import scala.collection.JavaConverters.asScalaSetConverter
 
 
@@ -10,12 +12,14 @@ import scala.collection.JavaConverters.asScalaSetConverter
  * Common tools
  */
 object AppTool extends Serializable {
+  private val log = Logger.getLogger(getClass)
 
   /**
    * Database set up
    */
   def ensureHiveDb(implicit spark: SparkSession): Unit = {
     val dbName = "cryptotrade"
+    log.info(s"Hive db $dbName will be used")
     spark.sql(s"CREATE DATABASE IF NOT EXISTS $dbName")
     spark.sql(s"USE $dbName")
   }

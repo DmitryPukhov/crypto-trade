@@ -6,7 +6,7 @@ from huobi.client.market import MarketClient
 from pyspark.sql import SparkSession
 
 
-class BtcUsdtImport:
+class CurrencyImport:
     """
     Import btc usdt m1 from stock exchange to raw layer
     """
@@ -25,14 +25,7 @@ class BtcUsdtImport:
         market_client = MarketClient(init_log=True)
         size = 60
         logging.info(f"Reading data from huobi, symbol:{symbol}, interval: {interval}, size:{size}")
-        out = None
-        for attempt in range(self.max_attempts):
-            try:
-                out = market_client.get_candlestick(symbol, interval, size)
-                break
-            except ConnectionError as err:
-                logging.error(f"Attempt {attempt} failed with error {err}")
-        return out
+        return market_client.get_candlestick(symbol, interval, size)
 
     def write_raw(self, candles, symbol: str, interval: str):
         """
@@ -50,4 +43,5 @@ class BtcUsdtImport:
         huobi_candles = self.get_candles_huobi(symbol, interval)
         self.write_raw(huobi_candles, symbol, interval)
 
-#BtcUsdtImport().run()
+
+CurrencyImport().run()
