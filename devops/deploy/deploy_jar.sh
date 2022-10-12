@@ -26,7 +26,7 @@ echo "Set $pg_host_property=$pg_host"
 #sed "s/\($pg_host_property\s*=\s*\).*/\1${pg_host}/g" application.properties.template > application.properties
 sed "s/\($pg_host_property\s*:\s*\).*/\1${pg_host}/g" application.properties.template > $app_properties_path
 # Pack application.properties to the jar as yandex lightweight dataproc cluster doesn't support passing the file when submitting
-zip $jar_path $app_properties_path
+zip -j $jar_path $app_properties_path
 
 # Copy the jar to the cloud
 echo "Copy $jar_path to $cloud_dir"
