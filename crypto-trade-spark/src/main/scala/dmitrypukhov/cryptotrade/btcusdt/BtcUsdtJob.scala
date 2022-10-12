@@ -1,6 +1,6 @@
 package dmitrypukhov.cryptotrade.btcusdt
 
-import dmitrypukhov.cryptotrade.JobTool
+import dmitrypukhov.cryptotrade.AppTool
 import BtcUsdtEtl.BinanceTransformDf
 import org.apache.hadoop.fs.Path
 import org.apache.log4j.Logger
@@ -15,7 +15,7 @@ import java.util.Properties
 object BtcUsdtJob {
 
   private val log = Logger.getLogger(getClass)
-  private implicit val spark: SparkSession = JobTool.initSpark()
+  private implicit val spark: SparkSession = AppTool.initSpark()
 
   /** External data uri for import */
   private val inputUri = spark.conf.get("dmitrypukhov.cryptotrade.input.btcusdt.uri")
@@ -44,7 +44,7 @@ object BtcUsdtJob {
    */
   def main(args: Array[String]): Unit = {
     // Set database
-    JobTool.ensureDb
+    AppTool.ensureDb
 
     // Import and transform
     external2Raw()

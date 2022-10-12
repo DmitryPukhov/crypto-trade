@@ -15,6 +15,6 @@ terraform.tfstate.backup
 *.iml
 .bsp
 # Configs with current environment
-application.dev.conf
+*.dev.conf
 devops/deploy/application.properties.template
 devops/deploy/application.properties

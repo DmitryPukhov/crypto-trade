@@ -6,8 +6,7 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.JavaConverters.asScalaSetConverter
 
-object JobTool extends Serializable {
-
+object AppTool extends Serializable {
 
   /**
    * Database set up
