@@ -5,6 +5,7 @@ from AppTool import AppTool
 from huobi.client.market import MarketClient
 from pyspark.sql import SparkSession
 
+
 class BtcUsdtImport:
     """
     Import btc usdt m1 from stock exchange to raw layer
@@ -37,7 +38,7 @@ class BtcUsdtImport:
         """
         Write candles to raw layer
         """
-        path = f"{self.raw_dir}/{symbol}/{interval}"
+        path = f"{self.raw_dir}/{symbol}_{interval}"
         logging.info(f"Writing candles to: {path}")
         spark = SparkSession.builder.getOrCreate()
         spark.createDataFrame(candles).write.json(path, "overwrite")
@@ -49,5 +50,4 @@ class BtcUsdtImport:
         huobi_candles = self.get_candles_huobi(symbol, interval)
         self.write_raw(huobi_candles, symbol, interval)
 
-
-BtcUsdtImport().run()
+#BtcUsdtImport().run()

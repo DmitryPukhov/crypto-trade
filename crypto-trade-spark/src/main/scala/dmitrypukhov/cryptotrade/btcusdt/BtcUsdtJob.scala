@@ -17,24 +17,13 @@ object BtcUsdtJob {
   private val log = Logger.getLogger(getClass)
   private implicit val spark: SparkSession = AppTool.initSpark()
 
-  /** External data uri for import */
-  private val inputUri = spark.conf.get("dmitrypukhov.cryptotrade.input.btcusdt.uri")
 
   /** Raw layer data location */
-  private val rawUri = new Path(spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir"), "btcusdt").toString
+  private val rawDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
+  private val rawUriOf = (symbol: String, interval: String) => f"${rawDir}/${symbol}_$interval"
 
   /** Hive database */
   private val dbName = spark.conf.get("dmitrypukhov.cryptotrade.data.db_name")
-
-  /** Base table name to use with layer prefix */
-  private val baseTable = spark.conf.get("dmitrypukhov.cryptotrade.data.btcusdt.table")
-
-  /** Hive processed table */
-  private val processedTable = s"$dbName.processed_$baseTable"
-
-  /** Postgres datamart table */
-  private val datamartPsqlTable = baseTable
-
   private val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.btcusdt.jdbc.uri")
   private val jdbcUser = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.btcusdt.jdbc.user")
   private val jdbcPassword = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.btcusdt.jdbc.password")
@@ -44,50 +33,40 @@ object BtcUsdtJob {
    */
   def main(args: Array[String]): Unit = {
     // Set database
-    AppTool.ensureDb
+    AppTool.ensureHiveDb
 
-    // Import and transform
-    external2Raw()
-    raw2Processed()
-    processedToMart()
+    // Raw -> processed -> datamart
+    val (symbol, interval) = ("btcusdt", "1min")
+    raw2Processed(symbol, interval)
+    hive2Psql(symbol)
   }
 
   /**
    * Processed Hive -> postgres datamart
    */
-  def processedToMart(): Unit = {
-    log.info(s"Read hive $processedTable, write to postgres datamart. Url: $jdbcUri, table: $datamartPsqlTable")
+  def hive2Psql(symbol: String): Unit = {
+    val tableName = symbol // postgres and hive tables are named equally
+    log.info(s"Read hive $tableName, write to postgres datamart. Url: $jdbcUri, table: $tableName")
     val props = new Properties()
-    props.put("Driver","org.postgresql.Driver")
-    props.put("user",jdbcUser)
-    props.put("password",jdbcPassword)
-    spark.read.table(processedTable)
-      .write.mode(SaveMode.Overwrite).jdbc(url = jdbcUri, table=baseTable, connectionProperties = props)
-
-    spark.read.jdbc(url = jdbcUri, table=baseTable, properties = props).show()
-
+    props.put("Driver", "org.postgresql.Driver")
+    props.put("user", jdbcUser)
+    props.put("password", jdbcPassword)
+    spark.read.table(tableName)
+      .write.mode(SaveMode.Overwrite).jdbc(url = jdbcUri, table = tableName, connectionProperties = props)
   }
 
   /**
    * Raw -> processed read,transform,write
    */
-  def raw2Processed(): Unit = {
-    log.info(s"Transform $rawUri to $processedTable table")
+  def raw2Processed(symbol: String, interval: String): Unit = {
+    val rawUri = rawUriOf(symbol, interval)
+    val dstTableName = f"${symbol}_$interval"
+    log.info(s"Transform $rawUri to $dstTableName table")
 
     spark
-      .read.option("header", value = true).csv(rawUri)
-      .binance2Ohlcv() // ETL
-      .write.mode(SaveMode.Overwrite).saveAsTable(processedTable)
-  }
-
-  /**
-   * Import csv from external system to csv raw layer
-   */
-  def external2Raw(): Unit = {
-    // Import to raw layer
-    log.info(s"Import from external system $inputUri to raw layer $rawUri")
-    spark
-      .read.option("header", value = true).csv(inputUri)
-      .write.option("header", value = true).mode(SaveMode.Overwrite).csv(rawUri)
+      .read.json(rawUri)
+      .raw2Ohlcv(symbol)
+      .withMacd()
+      .write.mode(SaveMode.Overwrite).saveAsTable(dstTableName)
   }
 }

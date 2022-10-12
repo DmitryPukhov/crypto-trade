@@ -3,15 +3,18 @@ package dmitrypukhov.cryptotrade
 import com.typesafe.config.{ConfigFactory, ConfigParseOptions}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-
 import scala.collection.JavaConverters.asScalaSetConverter
 
+
+/**
+ * Common tools
+ */
 object AppTool extends Serializable {
 
   /**
    * Database set up
    */
-  def ensureDb(implicit spark: SparkSession): Unit = {
+  def ensureHiveDb(implicit spark: SparkSession): Unit = {
     val dbName = "cryptotrade"
     spark.sql(s"CREATE DATABASE IF NOT EXISTS $dbName")
     spark.sql(s"USE $dbName")
@@ -21,7 +24,7 @@ object AppTool extends Serializable {
    * Spark session unitialization util
    */
   def initSpark(): SparkSession =
-  // Create spark session
+    // Create spark session
     SparkSession.builder().enableHiveSupport().config(config).getOrCreate()
 
   /**
