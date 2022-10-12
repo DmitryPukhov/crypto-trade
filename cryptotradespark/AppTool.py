@@ -23,6 +23,7 @@ class AppTool:
         config.update(os.environ)
         logging.info("Config initialized")
         logging.info(config)
+        return config
 
     @staticmethod
     def init_logger():

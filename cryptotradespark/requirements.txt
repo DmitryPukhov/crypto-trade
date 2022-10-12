@@ -1,1 +1,4 @@
 PyYAML~=5.4.1
+huobi-sdk~=2.3.3
+pyspark~=3.3.0
+#https://github.com/HuobiRDCenter/huobi_Python/@master
