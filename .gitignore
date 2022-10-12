@@ -19,3 +19,4 @@ terraform.tfstate.backup
 *.dev.conf
 devops/deploy/application.properties.template
 devops/deploy/application.properties
+devops/deploy/tmp
