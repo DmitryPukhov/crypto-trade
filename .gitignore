@@ -2,7 +2,7 @@
 metastore_db
 spark-warehouse
 derby.log
-data/raw/*
+data
 target
 
 *.tfvars

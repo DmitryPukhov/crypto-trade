@@ -17,15 +17,13 @@ object CurrencyJob {
   private val log = Logger.getLogger(getClass)
   private implicit val spark: SparkSession = AppTool.initSpark()
 
-
   /** Raw layer data location */
   private val rawDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
-  private val rawUriOf = (symbol: String, interval: String) => f"${rawDir}/${symbol}_$interval"
 
   /** Hive database */
-  private val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.btcusdt.jdbc.uri")
-  private val jdbcUser = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.btcusdt.jdbc.user")
-  private val jdbcPassword = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.btcusdt.jdbc.password")
+  private val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.uri")
+  private val jdbcUser = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.user")
+  private val jdbcPassword = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.password")
 
   /** *
    * The job
@@ -58,7 +56,7 @@ object CurrencyJob {
    * Raw -> processed read,transform,write
    */
   def raw2Macd(symbol: String, interval: String): Unit = {
-    val rawUri = rawUriOf(symbol, interval)
+    val rawUri = f"${rawDir}/${symbol}_$interval"
     val(signal,fast,slow)=(9,12,26)
     val dstTableName = f"${symbol}_macd_${slow}_${12}_${26}"
 
