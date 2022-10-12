@@ -5,7 +5,7 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{avg, from_unixtime, lit, window}
 
 object CurrencyEtl extends Serializable {
-  implicit class BinanceTransformDf(df: DataFrame) {
+  implicit class Functions(df: DataFrame) {
     /**
      * Transform raw huobi model to ohlcv
      */

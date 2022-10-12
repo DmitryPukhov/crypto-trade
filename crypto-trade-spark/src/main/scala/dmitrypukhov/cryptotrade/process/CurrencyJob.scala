@@ -1,8 +1,7 @@
 package dmitrypukhov.cryptotrade.process
 
 import dmitrypukhov.cryptotrade.AppTool
-import CurrencyEtl.BinanceTransformDf
-import org.apache.hadoop.fs.Path
+import dmitrypukhov.cryptotrade.process.CurrencyEtl.Functions
 import org.apache.log4j.Logger
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
@@ -19,6 +18,10 @@ object CurrencyJob {
 
   /** Raw layer data location */
   private val rawDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
+  private val (symbol: String, signal: Int, slow: Int, fast: Int) = ("btcusdt", 9, 12, 26)
+
+  private def macdTableName = f"${symbol}_macd_${slow}_${12}_${26}"
+
 
   /** Hive database */
   private val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.uri")
@@ -35,15 +38,14 @@ object CurrencyJob {
     // Raw -> processed -> datamart
     val (symbol, interval) = ("btcusdt", "1min")
     raw2Macd(symbol, interval)
-    hive2Psql(symbol)
+    hive2Psql(macdTableName)
   }
 
   /**
    * Processed Hive -> postgres datamart
    */
-  def hive2Psql(symbol: String): Unit = {
-    val tableName = symbol // postgres and hive tables are named equally
-    log.info(s"Read hive $tableName, write to postgres datamart. Url: $jdbcUri, table: $tableName")
+  def hive2Psql(tableName: String): Unit = {
+    log.info(s"Read hive $tableName, write to psql $tableName. Jdbc uri: $jdbcUri")
     val props = new Properties()
     props.put("Driver", "org.postgresql.Driver")
     props.put("user", jdbcUser)
@@ -56,15 +58,13 @@ object CurrencyJob {
    * Raw -> processed read,transform,write
    */
   def raw2Macd(symbol: String, interval: String): Unit = {
-    val rawUri = f"${rawDir}/${symbol}_$interval"
-    val(signal,fast,slow)=(9,12,26)
-    val dstTableName = f"${symbol}_macd_${slow}_${12}_${26}"
+    val rawUri = f"$rawDir/${symbol}_$interval"
 
-    log.info(s"Transform $rawUri to $dstTableName table")
+    log.info(s"Transform $rawUri to $macdTableName table")
     spark
       .read.json(rawUri)
-      .huobi2Ohlcv(symbol)      // raw -> ohlcv
-      .toMacd(signal,fast,slow) // ohlcv -> macd indicator
-      .write.mode(SaveMode.Overwrite).saveAsTable(dstTableName)
+      .huobi2Ohlcv(symbol) // raw -> ohlcv
+      .toMacd(signal, fast, slow) // ohlcv -> macd indicator
+      .write.mode(SaveMode.Overwrite).saveAsTable(macdTableName)
   }
 }
