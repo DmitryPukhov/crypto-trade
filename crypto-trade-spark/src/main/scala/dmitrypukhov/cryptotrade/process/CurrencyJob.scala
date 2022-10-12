@@ -20,7 +20,7 @@ object CurrencyJob {
   private val rawDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
   private val (symbol: String, signal: Int, slow: Int, fast: Int) = ("btcusdt", 9, 12, 26)
 
-  private def macdTableName = f"${symbol}_macd_${slow}_${12}_${26}"
+  private def macdTableName = f"${symbol}_macd_${signal}_${slow}_${fast}"
 
 
   /** Hive database */
