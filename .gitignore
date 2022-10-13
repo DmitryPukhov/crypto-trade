@@ -20,3 +20,4 @@ terraform.tfstate.backup
 devops/deploy/application.properties.template
 devops/deploy/application.properties
 devops/deploy/tmp
+devops/deploy/app_conf.py.template

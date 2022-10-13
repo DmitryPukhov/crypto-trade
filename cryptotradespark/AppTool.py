@@ -2,6 +2,7 @@ import logging
 import logging.config
 import os
 import yaml
+from cfg.app_conf import app_conf
 
 
 class AppTool:
@@ -12,9 +13,7 @@ class AppTool:
         """
         cfgpaths = ["cfg/application.defaults.conf", "cfg/application.dev.conf", "cfg/application.conf"]
         print(f"Init logging from {cfgpaths}")
-        config = {"dmitrypukhov.cryptotrade.data.raw.dir": "s3a://dmitrypukhov-cryptotrade/data/raw",
-                  "dmitrypukhov.cryptotrade.data.db_name": "cryptotrade",
-                  "dmitrypukhov.cryptotrade.data.btcusdt.table": "btcusdt"}
+        config = app_conf
         for cfgpath in cfgpaths:
             if os.path.exists(cfgpath):
                 with open(cfgpath) as cur_cfg:
@@ -34,6 +33,7 @@ class AppTool:
         """
         cfgpaths = ["cfg/log.defaults.conf", "cfg/log.conf", "cfg/log.dev.conf"]
         print(f"Init logging from {cfgpaths}")
+        logging.basicConfig(level="INFO")
         for cfgpath in cfgpaths:
             if os.path.exists(cfgpath):
                 logging.config.fileConfig(cfgpath)

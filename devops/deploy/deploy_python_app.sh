@@ -3,38 +3,50 @@
 #############################################################################
 app_dir=../../cryptotradespark
 tmp_dir=./tmp/cryptotradespark
-cloud_dir=s3://dmitrypukhov-cryptotrade/app/
+tmp_app_dir=$tmp_dir/app
+cloud_dir=s3://dmitrypukhov-cryptotrade/app/cryptotradespark
+rm -r $tmp_dir
 mkdir -p $tmp_dir
 
 # Copy python app
-echo "Copy $app_dir to $tmp_dir"
-rm -r $tmp_dir
-cp -r $app_dir $tmp_dir
+echo "Copy $app_dir to $tmp_app_dir"
+cp -r $app_dir $tmp_app_dir
 
 # Remove not required files
-rm -r $tmp_dir/__pycache__
-rm $tmp_dir/cfg/application.dev.conf
-rm $tmp_dir/*.iml
+rm -r $tmp_app_dir/__pycache__
+rm -r $tmp_app_dir/*/__pycache__
+rm $tmp_app_dir/cfg/application.dev.conf
+rm $tmp_app_dir/*.iml
 
 # Pack python libs
 venv_lib_dir=../../venv/lib/python3.8/site-packages
 dist_lib_dir=/usr/lib/python3/dist-packages
-tmp_lib_dir=$tmp_dir/lib
-mkdir -p $tmp_lib_dir
-rm -f $tmp_lib_dir/pytrade_libs.zip
-# Pack libraries
-cp -r -f $venv_lib_dir/huobi ./huobi
-zip -r $tmp_lib_dir/pytrade_libs.zip huobi
-rm -r ./huobi
+rm -f $tmp_dir/cryptotrade_libs.zip
 
+# Copy config
+cp -f app_conf.py.template $tmp_app_dir/cfg/app_conf.py
+
+# Pack libraries
+# huobi lib
+cp -r -f $venv_lib_dir/huobi ./huobi
+zip -r $tmp_dir/cryptotrade_libs.zip huobi
+rm -r ./huobi
+# yaml lib
 cp -r -f $dist_lib_dir/yaml ./yaml
-zip -r $tmp_lib_dir/pytrade_libs.zip yaml
+zip -r $tmp_dir/cryptotrade_libs.zip yaml
 rm -r ./yaml
 
+#app
+cd $tmp_app_dir || exit
+zip -r cryptotradespark.zip ./
+cd "$OLDPWD" || exit
+mv $tmp_app_dir/cryptotradespark.zip $tmp_dir/
 
 # Copy the app to the cloud
 echo "Copy $tmp_dir to $cloud_dir"
-s3cmd sync -f $tmp_dir $cloud_dir
+s3cmd rm -r $cloud_dir
+s3cmd sync -f $tmp_app_dir/ $cloud_dir/cryptotradespark/
+s3cmd put -f $tmp_dir/*.zip $cloud_dir/
 
 
 
