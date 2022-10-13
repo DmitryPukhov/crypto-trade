@@ -36,11 +36,6 @@ object CurrencyJob {
   private def macdTableName = f"${symbol}_macd_${signal}_${slow}_${fast}"
 
 
-  /** Hive database */
-  private val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.uri")
-  private val jdbcUser = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.user")
-  private val jdbcPassword = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.password")
-
   /**
    * Transform raw data, fill in 2 data marts: candles and macd
    */
@@ -48,25 +43,53 @@ object CurrencyJob {
     // Set database
     AppTool.ensureHiveDb
 
-    // Raw -> processed
+    // Raw -> hive processed
     raw2Ohlcv()
     ohlcv2Macd()
-    // Processed -> datamarts
+    // Processed -> postgres datamarts
     hive2Psql(ohlcvTableName)
     hive2Psql(macdTableName)
+    // Processed -> clickhouse datamarts
+    hive2Click(ohlcvTableName)
   }
 
   /**
    * Hive -> postgres, preserve table name
    */
   def hive2Psql(tableName: String): Unit = {
+    /** Jdbc database */
+    val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.psql.uri")
+    val jdbcUser = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.psql.user")
+    val jdbcPassword = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.psql.password")
+
     log.info(s"Read hive $tableName, write to psql $tableName. Jdbc uri: $jdbcUri")
     val props = new Properties()
     props.put("Driver", "org.postgresql.Driver")
     props.put("user", jdbcUser)
     props.put("password", jdbcPassword)
     spark.read.table(tableName)
-      .write.mode(SaveMode.Overwrite).jdbc(url = jdbcUri, table = tableName, connectionProperties = props)
+      .write
+      .mode(SaveMode.Overwrite)
+      .jdbc(url = jdbcUri, table = tableName, connectionProperties = props)
+  }
+
+  def hive2Click(tableName: String): Unit = {
+    log.info(s"Read hive $tableName, write to click $tableName")
+    /** Jdbc database */
+    val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click.uri")
+    val jdbcUser = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click.user")
+    val jdbcPassword = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click.password")
+
+    log.info(s"Read hive $tableName, write to psql $tableName. Jdbc uri: $jdbcUri")
+    val props = new Properties()
+    props.put("Driver", "ru.yandex.clickhouse.ClickHouseDriver")
+    props.put("user", jdbcUser)
+    props.put("password", jdbcPassword)
+    spark.read.table(tableName)
+      .write
+      .mode(SaveMode.Overwrite)
+      .option("createTableOptions", "ENGINE=Log()") // Clickhouse specific option
+      .jdbc(url = jdbcUri, table = tableName, connectionProperties = props)
   }
 
   /**
@@ -74,7 +97,7 @@ object CurrencyJob {
    */
   def raw2Ohlcv(): Unit = {
     log.info(s"Transform $rawDir to $macdTableName table")
-    spark.read.json(path=rawDir)
+    spark.read.json(path = rawDir)
       .huobi2Ohlcv(symbol) // raw -> ohlcv
       .write.mode(SaveMode.Overwrite).saveAsTable(ohlcvTableName)
   }
