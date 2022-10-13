@@ -12,7 +12,9 @@ class AppTool:
         """
         cfgpaths = ["cfg/application.defaults.conf", "cfg/application.dev.conf", "cfg/application.conf"]
         print(f"Init logging from {cfgpaths}")
-        config = dict()
+        config = {"dmitrypukhov.cryptotrade.data.raw.dir": "s3a://dmitrypukhov-cryptotrade/data/raw",
+                  "dmitrypukhov.cryptotrade.data.db_name": "cryptotrade",
+                  "dmitrypukhov.cryptotrade.data.btcusdt.table": "btcusdt"}
         for cfgpath in cfgpaths:
             if os.path.exists(cfgpath):
                 with open(cfgpath) as cur_cfg:
