@@ -5,6 +5,7 @@ variable "oauth_token" { default = "<please set the value in file main.auto.tfva
 variable "cloud_id" { default = "<please set the value in file main.auto.tfvars>" }
 variable "folder_id" { default = "<please set the value in file main.auto.tfvars>" }
 variable "psql_pwd" { default = "<please set the value in file main.auto.tfvars>" }
+variable "clickhouse_pwd" { default = "<please set the value in file main.auto.tfvars>" }
 variable hadoop_public_key_file { default = "<please set the value in file main.auto.tfvars>" }
 
 
@@ -15,6 +16,7 @@ variable hadoop_public_key_file { default = "<please set the value in file main.
 variable is_hadoop { default = 1 }
 variable is_bucket { default = 1 }
 variable is_pgsql { default = 1 }
+variable is_clickhouse { default = 1 }
 
 locals {
   bucket_name           = "dmitrypukhov-cryptotrade"
