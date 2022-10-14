@@ -43,7 +43,7 @@ object CurrencyJob {
     // Set database
     AppTool.ensureHiveDb
 
-    // Raw -> hive processed
+//    // Raw -> hive processed
     raw2Ohlcv()
     ohlcv2Macd()
     // Processed -> postgres datamarts

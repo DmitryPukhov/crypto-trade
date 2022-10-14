@@ -21,10 +21,20 @@ cp -f $scala_code_dir/target/scala-2.12/$jar_name $jar_path
 pg_host_name=$(yc managed-postgresql host list --cluster-name cryptotrade-psql | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n/ /g')
 pg_host_name=$(echo "$pg_host_name" | xargs)
 pg_host="jdbc:postgresql:\/\/$pg_host_name\:6432\/cryptotrade"
-pg_host_property="dmitrypukhov\.cryptotrade\.data\.mart\.currency\.jdbc\.uri"
+pg_host_property="dmitrypukhov\.cryptotrade\.data\.mart\.currency\.jdbc\.psql\.uri"
 echo "Set $pg_host_property=$pg_host in $app_properties_path"
-#sed "s/\($pg_host_property\s*=\s*\).*/\1${pg_host}/g" application.properties.template > application.properties
-sed "s/\($pg_host_property\s*\:\s*\).*/\1${pg_host}/g" application.properties.template > $app_properties_path
+sed "s/\($pg_host_property\s*\:\s*\).*/\1${pg_host}/g" application.properties.template > "$app_properties_path.tmp"
+
+# Set clickhouse url in application.properties
+ch_host_name=$(yc managed-clickhouse host list --cluster-name cryptotrade-clickhouse | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n/ /g')
+ch_host_name=$(echo "$ch_host_name" | xargs)
+ch_host="jdbc:clickhouse:\/\/$ch_host_name\:9440\/cryptotrade"
+ch_host_property="dmitrypukhov\.cryptotrade\.data\.mart\.currency\.jdbc\.click\.uri"
+echo "Set $ch_host_property=$ch_host in $app_properties_path"
+sed "s/\($ch_host_property\s*\:\s*\).*/\1${ch_host}/g" "$app_properties_path.tmp" > $app_properties_path
+
+rm "$app_properties_path.tmp"
+
 # Pack application.properties to the jar as yandex lightweight dataproc cluster doesn't support passing the file when submitting
 zip -j $jar_path $app_properties_path
 

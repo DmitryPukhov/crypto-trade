@@ -83,7 +83,7 @@ resource "yandex_vpc_security_group" "sg-psql" {
 ######################################################
 
 resource "yandex_vpc_security_group" "sg-clickhouse" {
-  count = var.is_pgsql
+  count = var.is_clickhouse
 
   name       = "sg-clickhouse"
   network_id = yandex_vpc_network.hadoop-network.id
@@ -97,6 +97,18 @@ resource "yandex_vpc_security_group" "sg-clickhouse" {
   ingress {
     description    = "Clickhouse"
     port         = 9440
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    description    = "Clickhouse"
+    port         = 8123
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    description    = "Clickhouse"
+    port         = 9000
     protocol       = "TCP"
     v4_cidr_blocks = [ "0.0.0.0/0" ]
   }
