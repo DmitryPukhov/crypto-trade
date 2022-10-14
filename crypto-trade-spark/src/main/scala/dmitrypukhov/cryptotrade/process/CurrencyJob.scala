@@ -6,6 +6,7 @@ import org.apache.log4j.Logger
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
 import java.util.Properties
+import scala.collection.JavaConverters.enumerationAsScalaIteratorConverter
 
 /**
  * 1. Read btc/usdt data from external system to raw
@@ -43,13 +44,13 @@ object CurrencyJob {
     // Set database
     AppTool.ensureHiveDb
 
-//    // Raw -> hive processed
+    // Raw -> hive processed
     raw2Ohlcv()
     ohlcv2Macd()
     // Processed -> postgres datamarts
     hive2Psql(ohlcvTableName)
     hive2Psql(macdTableName)
-    // Processed -> clickhouse datamarts
+    //Processed -> clickhouse datamarts
     hive2Click(ohlcvTableName)
   }
 
@@ -67,6 +68,8 @@ object CurrencyJob {
     props.put("Driver", "org.postgresql.Driver")
     props.put("user", jdbcUser)
     props.put("password", jdbcPassword)
+    props.put("secure", "true")
+    props.put("compression", "false")
     spark.read.table(tableName)
       .write
       .mode(SaveMode.Overwrite)
@@ -75,16 +78,20 @@ object CurrencyJob {
 
   def hive2Click(tableName: String): Unit = {
     log.info(s"Read hive $tableName, write to click $tableName")
-    /** Jdbc database */
-    val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click.uri")
-    val jdbcUser = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click.user")
-    val jdbcPassword = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click.password")
 
-    log.info(s"Read hive $tableName, write to psql $tableName. Jdbc uri: $jdbcUri")
+    val jdbcUri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click.uri")
+    log.info(s"Read hive $tableName, write to clickhouse $tableName. Jdbc uri: $jdbcUri")
+
+    // Set up properties
     val props = new Properties()
+    //props.put("Driver", "com.clickhouse.jdbc.ClickHouseDriver")
     props.put("Driver", "ru.yandex.clickhouse.ClickHouseDriver")
-    props.put("user", jdbcUser)
-    props.put("password", jdbcPassword)
+    spark.conf.getAll.filter(_._1.startsWith("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click"))
+      .foreach(t => props.put(t._1.split("\\.").last, t._2)) // Filter props from config, set them up
+
+
+    log.info(s"Properties: ${props.keys().asScala.toList.map(_.toString).filter(_ != "password").map(key => s"$key=${props.getProperty(key)}")}")
+    // Read Hive, wite postgres
     spark.read.table(tableName)
       .write
       .mode(SaveMode.Overwrite)
