@@ -1,5 +1,7 @@
 package dmitrypukhov.cryptotrade.process
 
+import com.mongodb.spark.MongoSpark
+import com.mongodb.spark.config.WriteConfig
 import dmitrypukhov.cryptotrade.AppTool
 import dmitrypukhov.cryptotrade.process.CurrencyEtl.Functions
 import org.apache.log4j.Logger
@@ -17,7 +19,7 @@ import scala.collection.mutable
 object CurrencyJob {
 
   private val log = Logger.getLogger(getClass)
-  private implicit lazy val spark: SparkSession = AppTool.initSpark()
+  private implicit val spark: SparkSession = AppTool.initSpark()
 
   /** Raw layer data location */
   private lazy val rawRootDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
@@ -63,18 +65,47 @@ object CurrencyJob {
       case "macd2psql" => hive2Psql(macdTableName)
       case "ohlcv2click" => hive2Click(ohlcvTableName)
       case "macd2click" => hive2Click(ohlcvTableName)
+      case "ohlcv2mongo" => hive2Mongo(ohlcvTableName)
+      case "macd2mongo" => hive2Mongo(macdTableName)
       case x => log.info(s"Not found the job with name: ${x}")
     }
   }
 
+  /**
+   * Hive -> mongo, preserve table name
+   */
+  def hive2Mongo(tableName: String): Unit = {
+    /** Jdbc database */
+    val uri    = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.uri")
+    val user = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.user")
+    val password = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.password")
+    val collection = tableName
+
+    log.info(s"Read hive $tableName, write to mongodb $collection. Jri: $uri")
+    val df = spark.read.table(tableName)
+    val writeConfig = WriteConfig(Map(
+      "spark.mongodb.output.uri"->uri,
+      "spark.mongodb.output.database"->"cryptotrade",
+      "spark.mongodb.output.collection" -> tableName,
+      "user"->user,
+      "password"->password))
+      //), Some(WriteConfig(spark)))
+    MongoSpark.save(df, writeConfig)
 //
-//  def macd2Psql(): Unit = hive2Psql(macdTableName)
-//
-//  def ohlcv2Psql(): Unit = hive2Psql(ohlcvTableName)
-//
-//  def macd2Click(): Unit = hive2Click(macdTableName)
-//
-//  def ohlcv2Click(): Unit = hive2Click(ohlcvTableName)
+//    Map("spark.mongodb.output.uri"->uri)
+//    val props = new Properties()
+//    props.put("user", user)
+//    props.put("password", password)
+//    MongoSpark.save(spark.read.table(tableName))
+//    spark.read.table(tableName)
+//      .write
+//      .option("spark.mongodb.write.database", "cryptotrade")
+//      .option("spark.mongodb.output.uri", uri)
+//      .option("collection", collection)
+//      .mode(SaveMode.Overwrite)
+//      .format("mongodb")
+//      .save()
+  }
 
   /**
    * Hive -> postgres, preserve table name
@@ -141,4 +172,5 @@ object CurrencyJob {
       .toMacd(signal, fast, slow) // ohlcv -> macd indicator
       .write.mode(SaveMode.Overwrite).saveAsTable(macdTableName)
   }
+
 }
