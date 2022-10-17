@@ -4,6 +4,8 @@ import axios, { CancelTokenSource } from 'axios';
 import './App.css';
 import IOhlcv from './types/Ohlcv';
 import { resolveProjectReferencePath } from 'typescript';
+import PriceChart from './pricechart/PriceChart.jsx';
+
 const defaultCandles: IOhlcv[] = [];
 
 function App() {
@@ -35,6 +37,9 @@ function App() {
     <div className="App">
       <div>
         <h1>Candles</h1>
+        <div>
+          {/* <PriceChart /> */}
+        </div>
         <ul>
           {candles.map((candle)=>(
             <li key = {candle.datetime}>
