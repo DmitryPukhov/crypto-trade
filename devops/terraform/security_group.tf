@@ -112,5 +112,30 @@ resource "yandex_vpc_security_group" "sg-clickhouse" {
     protocol       = "TCP"
     v4_cidr_blocks = [ "0.0.0.0/0" ]
   }
+}
+
+
+######################################################
+# Mongo db sg
+######################################################
+
+resource "yandex_vpc_security_group" "sg-mongodb" {
+  count = var.is_mongodb
+
+  name       = "sg-mongodb"
+  network_id = yandex_vpc_network.hadoop-network.id
+
+  ingress {
+    description    = "MongoDb sharded cluster"
+    port           = 27017
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    description    = "MongoDb non sharded cluster"
+    port           = 27018
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
 
 }
