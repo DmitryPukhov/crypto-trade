@@ -12,6 +12,7 @@ ch_ssh_path=../.ssh/ch.CA.pem
 set -e
 # Build the jar, copy to current folder
 echo "Build the jar"
+rm $jar_path
 mkdir -p $tmp_dir
 cd $scala_code_dir || exit
 sbt clean assembly

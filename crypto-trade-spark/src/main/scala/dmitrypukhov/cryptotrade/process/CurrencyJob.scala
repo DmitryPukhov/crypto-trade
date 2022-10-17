@@ -38,8 +38,8 @@ object CurrencyJob {
   /** Hive and psql table name for macd indicator */
   private lazy val macdTableName = f"${symbol}_macd_${signal}_${slow}_${fast}"
 
-  /** Map jobname -> job func, keys are in default execution order */
-  val jobMap = ListMap("raw2ohlcv" -> raw2Ohlcv, "ohlcv2macd" -> ohlcv2Macd, "ohlcv2psql" -> ohlcv2Psql, "macd2psql" -> macd2Psql, "ohlcv2click" -> ohlcv2Click, "macd2click" -> macd2Click)
+//  /** Map jobname -> job func, keys are in default execution order */
+//  val jobMap: Map[String, () => Unit] = ListMap("raw2ohlcv" -> raw2Ohlcv, "ohlcv2macd" -> ohlcv2Macd, "ohlcv2psql" -> ohlcv2Psql, "macd2psql" -> macd2Psql, "ohlcv2click" -> ohlcv2Click, "macd2click" -> macd2Click)
 
   /**
    * Transform raw data, fill in 2 data marts: candles and macd
@@ -67,13 +67,14 @@ object CurrencyJob {
     }
   }
 
-  def macd2Psql = hive2Psql(macdTableName)
-
-  def ohlcv2Psql = hive2Psql(ohlcvTableName)
-
-  def macd2Click = hive2Click(macdTableName)
-
-  def ohlcv2Click = hive2Click(ohlcvTableName)
+//
+//  def macd2Psql(): Unit = hive2Psql(macdTableName)
+//
+//  def ohlcv2Psql(): Unit = hive2Psql(ohlcvTableName)
+//
+//  def macd2Click(): Unit = hive2Click(macdTableName)
+//
+//  def ohlcv2Click(): Unit = hive2Click(ohlcvTableName)
 
   /**
    * Hive -> postgres, preserve table name
