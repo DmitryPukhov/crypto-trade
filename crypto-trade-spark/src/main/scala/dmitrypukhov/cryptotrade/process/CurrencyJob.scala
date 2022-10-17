@@ -7,6 +7,8 @@ import org.apache.spark.sql.{SaveMode, SparkSession}
 
 import java.util.Properties
 import scala.collection.JavaConverters.enumerationAsScalaIteratorConverter
+import scala.collection.immutable.ListMap
+import scala.collection.mutable
 
 /**
  * 1. Read btc/usdt data from external system to raw
@@ -15,10 +17,10 @@ import scala.collection.JavaConverters.enumerationAsScalaIteratorConverter
 object CurrencyJob {
 
   private val log = Logger.getLogger(getClass)
-  private implicit val spark: SparkSession = AppTool.initSpark()
+  private implicit lazy val spark: SparkSession = AppTool.initSpark()
 
   /** Raw layer data location */
-  private val rawRootDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
+  private lazy val rawRootDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
 
   /** Currency symbol and candles interval */
   val symbol = "btcusdt"
@@ -28,14 +30,16 @@ object CurrencyJob {
   private val (signal: Int, slow: Int, fast: Int) = (9, 12, 26)
 
   /** Raw data folder Uri */
-  private val rawDir = f"$rawRootDir/${symbol}_$interval"
+  private lazy val rawDir = f"$rawRootDir/${symbol}_$interval"
 
   /** Hive and psql table name for candles */
-  private val ohlcvTableName = f"${symbol}_$interval"
+  private lazy val ohlcvTableName = f"${symbol}_$interval"
 
   /** Hive and psql table name for macd indicator */
-  private def macdTableName = f"${symbol}_macd_${signal}_${slow}_${fast}"
+  private lazy val macdTableName = f"${symbol}_macd_${signal}_${slow}_${fast}"
 
+  /** Map jobname -> job func, keys are in default execution order */
+  val jobMap = ListMap("raw2ohlcv" -> raw2Ohlcv, "ohlcv2macd" -> ohlcv2Macd, "ohlcv2psql" -> ohlcv2Psql, "macd2psql" -> macd2Psql, "ohlcv2click" -> ohlcv2Click, "macd2click" -> macd2Click)
 
   /**
    * Transform raw data, fill in 2 data marts: candles and macd
@@ -44,15 +48,32 @@ object CurrencyJob {
     // Set database
     AppTool.ensureHiveDb
 
-    // Raw -> hive processed
-    raw2Ohlcv()
-    ohlcv2Macd()
-    // Processed -> postgres datamarts
-    hive2Psql(ohlcvTableName)
-    hive2Psql(macdTableName)
-    //Processed -> clickhouse datamarts
-    hive2Click(ohlcvTableName)
+    //val jobNames = if (args.nonEmpty) args.flatMap(arg => arg.split("\\s*,\\s*")).toSeq else jobMap.keys.toSeq
+    val jobNames = args.flatMap(arg => arg.split("\\s*,\\s*")).toSeq
+    log.info(s"Jobs to run: ${jobNames.mkString(",")}")
+    // Run jobs one by one
+    jobNames.foreach(runJob)
   }
+
+  def runJob(name: String) = {
+    name.toLowerCase match {
+      case "raw2ohlcv" => raw2Ohlcv()
+      case "ohlcv2macd" => ohlcv2Macd()
+      case "ohlcv2psql" => hive2Psql(ohlcvTableName)
+      case "macd2psql" => hive2Psql(macdTableName)
+      case "ohlcv2click" => hive2Click(ohlcvTableName)
+      case "macd2click" => hive2Click(ohlcvTableName)
+      case x => log.info(s"Not found the job with name: ${x}")
+    }
+  }
+
+  def macd2Psql = hive2Psql(macdTableName)
+
+  def ohlcv2Psql = hive2Psql(ohlcvTableName)
+
+  def macd2Click = hive2Click(macdTableName)
+
+  def ohlcv2Click = hive2Click(ohlcvTableName)
 
   /**
    * Hive -> postgres, preserve table name
