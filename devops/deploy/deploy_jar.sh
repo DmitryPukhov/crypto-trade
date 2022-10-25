@@ -30,7 +30,7 @@ sed "s/\($pg_host_property\s*\:\s*\).*/\1${pg_host}/g" application.properties.te
 # Set clickhouse url in application.properties
 ch_host_name=$(yc managed-clickhouse host list --cluster-name cryptotrade-clickhouse | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n/ /g')
 ch_host_name=$(echo "$ch_host_name" | xargs)
-ch_host="jdbc:clickhouse:\/\/$ch_host_name\:8443\/cryptotrade"
+ch_host="jdbc:clickhouse:\/\/$ch_host_name\:8443\/cryptotrade\?ssl=1\&sslmode=strict\&sslrootcert=ch.CA.pem"
 ch_host_property="dmitrypukhov\.cryptotrade\.data\.mart\.currency\.jdbc\.click\.uri"
 echo "Set $ch_host_property=$ch_host in $app_properties_path"
 sed "s/\($ch_host_property\s*\:\s*\).*/\1${ch_host}/g" "$app_properties_path.tmp" > $app_properties_path
