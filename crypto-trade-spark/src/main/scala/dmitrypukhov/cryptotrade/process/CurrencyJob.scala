@@ -6,7 +6,6 @@ import dmitrypukhov.cryptotrade.AppTool
 import dmitrypukhov.cryptotrade.process.CurrencyEtl.Functions
 import org.apache.log4j.Logger
 import org.apache.spark.sql.{SaveMode, SparkSession}
-
 import java.util.Properties
 import scala.collection.JavaConverters.enumerationAsScalaIteratorConverter
 
@@ -72,10 +71,7 @@ object CurrencyJob {
    * Hive -> mongo, preserve table name
    */
   def hive2Mongo(tableName: String): Unit = {
-    /** Jdbc database */
     val uri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.uri")
-    val user = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.user")
-    val password = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.password")
     val collection = tableName
 
     log.info(s"Read hive $tableName, write to mongodb $collection. Uri: $uri")
@@ -83,12 +79,9 @@ object CurrencyJob {
     val writeConfig = WriteConfig(Map(
       "spark.mongodb.output.uri" -> uri,
       "spark.mongodb.output.database" -> "cryptotrade",
-      "spark.mongodb.output.collection" -> tableName,
-      "user" -> user,
-      "password" -> password))
+      "spark.mongodb.output.collection" -> tableName))
 
-    MongoSpark.save(df, writeConfig)
-
+    MongoSpark.save(df, writeConfig) // Write to mongo
   }
 
   /**

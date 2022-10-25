@@ -8,7 +8,6 @@ app_properties_path="$tmp_dir/application.properties"
 scala_code_dir=../../crypto-trade-spark
 cloud_dir=s3://dmitrypukhov-cryptotrade/app/
 ch_ssh_path=../.ssh/ch.CA.pem
-yandex_internal_root_ca_path=../.ssh/YandexInternalRootCA.crt
 
 set -e
 # Build the jar, copy to current folder
@@ -47,13 +46,10 @@ sed "s/\($mongo_host_property\s*\:\s*\).*/\1${mongo_host}/g" "$app_properties_pa
 rm "$app_properties_path.tmp.1"
 rm "$app_properties_path.tmp.2"
 
-
 # Pack application.properties to the jar as yandex lightweight dataproc cluster doesn't support passing the file when submitting
 zip -j $jar_path $app_properties_path
 # Pack clickhose certificate
 zip -j $jar_path $ch_ssh_path
-# Pack mongo certificate
-zip -j $jar_path $yandex_internal_root_ca_path
 
 # Copy the jar to the cloud
 echo "Copy $jar_path to $cloud_dir"
