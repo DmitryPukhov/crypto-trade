@@ -22,6 +22,7 @@ devops/deploy/application.properties
 devops/deploy/tmp
 devops/deploy/app_conf.py.template
 devops/.ssh
+*.crt
 
 .vscode
 *.lock

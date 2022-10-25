@@ -9,8 +9,6 @@ import org.apache.spark.sql.{SaveMode, SparkSession}
 
 import java.util.Properties
 import scala.collection.JavaConverters.enumerationAsScalaIteratorConverter
-import scala.collection.immutable.ListMap
-import scala.collection.mutable
 
 /**
  * 1. Read btc/usdt data from external system to raw
@@ -38,10 +36,10 @@ object CurrencyJob {
   private lazy val ohlcvTableName = f"${symbol}_$interval"
 
   /** Hive and psql table name for macd indicator */
-  private lazy val macdTableName = f"${symbol}_macd_${signal}_${slow}_${fast}"
+  private lazy val macdTableName = f"${symbol}_macd_${signal}_${slow}_$fast"
 
-//  /** Map jobname -> job func, keys are in default execution order */
-//  val jobMap: Map[String, () => Unit] = ListMap("raw2ohlcv" -> raw2Ohlcv, "ohlcv2macd" -> ohlcv2Macd, "ohlcv2psql" -> ohlcv2Psql, "macd2psql" -> macd2Psql, "ohlcv2click" -> ohlcv2Click, "macd2click" -> macd2Click)
+  //  /** Map jobname -> job func, keys are in default execution order */
+  //  val jobMap: Map[String, () => Unit] = ListMap("raw2ohlcv" -> raw2Ohlcv, "ohlcv2macd" -> ohlcv2Macd, "ohlcv2psql" -> ohlcv2Psql, "macd2psql" -> macd2Psql, "ohlcv2click" -> ohlcv2Click, "macd2click" -> macd2Click)
 
   /**
    * Transform raw data, fill in 2 data marts: candles and macd
@@ -50,14 +48,13 @@ object CurrencyJob {
     // Set database
     AppTool.ensureHiveDb
 
-    //val jobNames = if (args.nonEmpty) args.flatMap(arg => arg.split("\\s*,\\s*")).toSeq else jobMap.keys.toSeq
     val jobNames = args.flatMap(arg => arg.split("\\s*,\\s*")).toSeq
     log.info(s"Jobs to run: ${jobNames.mkString(",")}")
     // Run jobs one by one
     jobNames.foreach(runJob)
   }
 
-  def runJob(name: String) = {
+  def runJob(name: String): Unit = {
     name.toLowerCase match {
       case "raw2ohlcv" => raw2Ohlcv()
       case "ohlcv2macd" => ohlcv2Macd()
@@ -67,7 +64,7 @@ object CurrencyJob {
       case "macd2click" => hive2Click(ohlcvTableName)
       case "ohlcv2mongo" => hive2Mongo(ohlcvTableName)
       case "macd2mongo" => hive2Mongo(macdTableName)
-      case x => log.info(s"Not found the job with name: ${x}")
+      case x => log.info(s"Not found the job with name: $x")
     }
   }
 
@@ -76,35 +73,22 @@ object CurrencyJob {
    */
   def hive2Mongo(tableName: String): Unit = {
     /** Jdbc database */
-    val uri    = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.uri")
+    val uri = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.uri")
     val user = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.user")
     val password = spark.conf.get("dmitrypukhov.cryptotrade.data.mart.currency.mongodb.password")
     val collection = tableName
 
-    log.info(s"Read hive $tableName, write to mongodb $collection. Jri: $uri")
+    log.info(s"Read hive $tableName, write to mongodb $collection. Uri: $uri")
     val df = spark.read.table(tableName)
     val writeConfig = WriteConfig(Map(
-      "spark.mongodb.output.uri"->uri,
-      "spark.mongodb.output.database"->"cryptotrade",
+      "spark.mongodb.output.uri" -> uri,
+      "spark.mongodb.output.database" -> "cryptotrade",
       "spark.mongodb.output.collection" -> tableName,
-      "user"->user,
-      "password"->password))
-      //), Some(WriteConfig(spark)))
+      "user" -> user,
+      "password" -> password))
+
     MongoSpark.save(df, writeConfig)
-//
-//    Map("spark.mongodb.output.uri"->uri)
-//    val props = new Properties()
-//    props.put("user", user)
-//    props.put("password", password)
-//    MongoSpark.save(spark.read.table(tableName))
-//    spark.read.table(tableName)
-//      .write
-//      .option("spark.mongodb.write.database", "cryptotrade")
-//      .option("spark.mongodb.output.uri", uri)
-//      .option("collection", collection)
-//      .mode(SaveMode.Overwrite)
-//      .format("mongodb")
-//      .save()
+
   }
 
   /**
@@ -172,5 +156,4 @@ object CurrencyJob {
       .toMacd(signal, fast, slow) // ohlcv -> macd indicator
       .write.mode(SaveMode.Overwrite).saveAsTable(macdTableName)
   }
-
 }
