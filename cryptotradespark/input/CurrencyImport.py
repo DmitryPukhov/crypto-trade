@@ -17,7 +17,7 @@ class CurrencyImport:
         self.max_attempts = 3
         self.raw_dir = self.conf["dmitrypukhov.cryptotrade.data.raw.dir"]
 
-    def get_candles_huobi(self, symbol: str, interval:str):
+    def get_candles_huobi(self, symbol: str, interval: str):
         """
         Request Huobi exchange for candles
         :return: huobi candle object
@@ -44,4 +44,5 @@ class CurrencyImport:
         self.write_raw(huobi_candles, symbol, interval)
 
 
-CurrencyImport().run()
+if __name__ == '__main__':
+    CurrencyImport().run()
