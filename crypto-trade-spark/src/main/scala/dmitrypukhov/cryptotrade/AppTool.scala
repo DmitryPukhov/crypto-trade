@@ -36,7 +36,7 @@ object AppTool extends Serializable {
    * Priority (left is more important): System env, application.conf, default spark conf
    * todo: reduce custom code, simplify
    */
-  private lazy val config = {
+  lazy val config: SparkConf = {
     // Start from default spark conf
     val conf = new SparkConf(true)
     // Application.conf overrides default spark conf

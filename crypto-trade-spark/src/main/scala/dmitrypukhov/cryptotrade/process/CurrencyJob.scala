@@ -3,7 +3,7 @@ package dmitrypukhov.cryptotrade.process
 import com.mongodb.spark.MongoSpark
 import com.mongodb.spark.config.WriteConfig
 import dmitrypukhov.cryptotrade.AppTool
-import dmitrypukhov.cryptotrade.process.CurrencyEtl.Functions
+import dmitrypukhov.cryptotrade.process.HuobiTransform.Functions
 import org.apache.log4j.Logger
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import java.util.Properties

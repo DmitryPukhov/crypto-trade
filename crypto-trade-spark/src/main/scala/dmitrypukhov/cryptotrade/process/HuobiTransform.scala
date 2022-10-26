@@ -4,7 +4,7 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{avg, from_unixtime, lit, window}
 
-object CurrencyEtl extends Serializable {
+object HuobiTransform extends Serializable {
   implicit class Functions(df: DataFrame) {
     /**
      * Transform raw huobi model to ohlcv
