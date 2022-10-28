@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static dmitrypukhov.cryptotrade.kafka.connect.binance.SampleSourceConnectorConfig.*;
+import static dmitrypukhov.cryptotrade.kafka.connect.binance.BinanceSourceConnectorConfig.*;
 
-public class SampleSourceConnector extends SourceConnector {
+public class BinanceSourceConnector extends SourceConnector {
 
-    private final Logger log = LoggerFactory.getLogger(SampleSourceConnector.class);
+    private final Logger log = LoggerFactory.getLogger(BinanceSourceConnector.class);
 
     private Map<String, String> originalProps;
-    private SampleSourceConnectorConfig config;
+    private BinanceSourceConnectorConfig config;
     private SourceMonitorThread sourceMonitorThread;
 
     @Override
@@ -34,7 +34,7 @@ public class SampleSourceConnector extends SourceConnector {
 
     @Override
     public Class<? extends Task> taskClass() {
-        return SampleSourceTask.class;
+        return BinanceSourceTask.class;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SampleSourceConnector extends SourceConnector {
     @Override
     public void start(Map<String, String> originalProps) {
         this.originalProps = originalProps;
-        config = new SampleSourceConnectorConfig(originalProps);
+        config = new BinanceSourceConnectorConfig(originalProps);
         String firstParam = config.getString(FIRST_NONREQUIRED_PARAM_CONFIG);
         String secondParam = config.getString(SECOND_NONREQUIRED_PARAM_CONFIG);
         int monitorThreadTimeout = config.getInt(MONITOR_THREAD_TIMEOUT_CONFIG);

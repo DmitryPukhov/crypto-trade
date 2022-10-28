@@ -10,25 +10,25 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SampleSourceConnectorTest {
+public class BinanceSourceConnectorTest {
 
     @Test
     public void connectorVersionShouldMatch() {
         String version = PropertiesUtil.getConnectorVersion();
-        assertEquals(version, new SampleSourceConnector().version());
+        assertEquals(version, new BinanceSourceConnector().version());
     }
 
     @Test
     public void checkClassTask() {
-        Class<? extends Task> taskClass = new SampleSourceConnector().taskClass();
-        assertEquals(SampleSourceTask.class, taskClass);
+        Class<? extends Task> taskClass = new BinanceSourceConnector().taskClass();
+        assertEquals(BinanceSourceTask.class, taskClass);
     }
 
     @Test
     public void checkMissingRequiredParams() {
         assertThrows(ConnectException.class, () -> {
             Map<String, String> props = new HashMap<>();
-            new SampleSourceConnector().validate(props);
+            new BinanceSourceConnector().validate(props);
         });
     }
 

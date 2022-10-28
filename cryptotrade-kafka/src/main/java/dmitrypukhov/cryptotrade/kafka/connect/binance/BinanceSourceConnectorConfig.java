@@ -7,9 +7,9 @@ import org.apache.kafka.common.config.ConfigDef.Type;
 
 import java.util.Map;
 
-public class SampleSourceConnectorConfig extends AbstractConfig {
+public class BinanceSourceConnectorConfig extends AbstractConfig {
 
-    public SampleSourceConnectorConfig(final Map<?, ?> originalProps) {
+    public BinanceSourceConnectorConfig(final Map<?, ?> originalProps) {
         super(CONFIG_DEF, originalProps);
     }
 
