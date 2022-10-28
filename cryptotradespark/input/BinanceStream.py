@@ -27,4 +27,4 @@ class BinanceStream:
 
 
 if __name__ == '__main__':
-    CurrencyBinanceStream().run()
+    BinanceStream().run()
