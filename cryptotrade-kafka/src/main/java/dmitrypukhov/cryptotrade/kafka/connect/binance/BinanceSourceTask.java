@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import static dmitrypukhov.cryptotrade.kafka.connect.binance.BinanceSourceConnectorConfig.BINANCE_URI;
 import static dmitrypukhov.cryptotrade.kafka.connect.binance.BinanceSourceConnectorConfig.MONITOR_THREAD_TIMEOUT_CONFIG;
 
 public class BinanceSourceTask extends SourceTask {
@@ -36,7 +37,9 @@ public class BinanceSourceTask extends SourceTask {
 
         // Create binance web socket client
         //String uri = properties.get("dmitrypukhov.cryptotrade.input.binance.uri");
-        String uri = "wss://testnet.binance.vision"; // todo: remove hard code
+
+        //String uri = "wss://testnet.binance.vision"; // todo: remove hard code
+        String uri = config.getString(BINANCE_URI);
         log.info(String.format("Creating Binance source task from %s", uri));
         WebsocketClientImpl client = new WebsocketClientImpl(uri); // defaults to production environment unless stated,
 

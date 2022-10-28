@@ -15,6 +15,9 @@ public class BinanceSourceTaskTest {
 
     @Test
     @Ignore
+    /**
+     * Not a test, just a placeholder for debugging
+     */
     public void shouldConnectToBinance() {
         Map<String, String> taskProps = getTaskProps(PropertiesUtil.propertiesMap());
 
@@ -33,18 +36,18 @@ public class BinanceSourceTaskTest {
         assertEquals(version, new BinanceSourceTask().version());
     }
 
-    @Test
-    @Ignore
-    public void checkNumberOfRecords() {
-        Map<String, String> connectorProps = new HashMap<>();
-        Map<String, String> taskProps = getTaskProps(connectorProps);
-        BinanceSourceTask task = new BinanceSourceTask();
-        assertDoesNotThrow(() -> {
-            task.start(taskProps);
-            List<SourceRecord> records = task.poll();
-            assertEquals(3, records.size());
-        });
-    }
+//    @Test
+//    @Ignore
+//    public void checkNumberOfRecords() {
+//        Map<String, String> connectorProps = new HashMap<>();
+//        Map<String, String> taskProps = getTaskProps(connectorProps);
+//        BinanceSourceTask task = new BinanceSourceTask();
+//        assertDoesNotThrow(() -> {
+//            task.start(taskProps);
+//            List<SourceRecord> records = task.poll();
+//            assertEquals(3, records.size());
+//        });
+//    }
 
     private Map<String, String> getTaskProps(Map<String, String> connectorProps) {
         BinanceSourceConnector connector = new BinanceSourceConnector();

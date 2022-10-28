@@ -28,12 +28,13 @@ public class BinanceSourceConnectorConfig extends AbstractConfig {
     }
 
     private static void addParams(final ConfigDef configDef) {
-//        configDef.define(
-//            BINANCE_URI,
-//            Type.STRING,
-//            Importance.LOW,
-//            BINANCE_URI_DOC)
         configDef.define(
+            BINANCE_URI,
+            Type.STRING,
+            PropertiesUtil.getBinanceWebSocketUri(),
+            Importance.HIGH,
+            BINANCE_URI_DOC)
+        .define(
             MONITOR_THREAD_TIMEOUT_CONFIG,
             Type.INT,
             MONITOR_THREAD_TIMEOUT_DEFAULT,
