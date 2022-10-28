@@ -5,6 +5,7 @@ derby.log
 data
 target
 production
+logs
 
 *.tfvars
 .terraform.*
@@ -27,3 +28,4 @@ devops/.ssh
 .vscode
 *.lock
 www/cryptotrade/package-lock.json
+

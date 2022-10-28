@@ -1,4 +1,7 @@
 PyYAML~=5.4.1
 huobi-sdk~=2.3.3
 pyspark~=3.3.0
+binance-futures-connector==3.1.1
+binance-connector==1.13.0
+
 #https://github.com/HuobiRDCenter/huobi_Python/@master

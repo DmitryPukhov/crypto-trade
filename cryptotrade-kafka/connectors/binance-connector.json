@@ -1,0 +1,9 @@
+{
+    "name": "binance-connector",
+    "config": {
+        "connector.class": "dmitrypukhov.cryptotrade.kafka.connect.binance.SampleSourceConnector",
+        "first.required.param": "Kafka",
+        "second.required.param": "Connect",
+        "tasks.max": "1"
+    }
+}
