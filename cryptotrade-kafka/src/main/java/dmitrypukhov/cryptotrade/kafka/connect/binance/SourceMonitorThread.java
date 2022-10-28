@@ -20,7 +20,7 @@ public class SourceMonitorThread extends Thread {
     private int monitorThreadTimeout;
 
     public SourceMonitorThread(ConnectorContext context,
-        String firstParam, String secondParam, int monitorThreadTimeout) {
+        String binanceUri, int monitorThreadTimeout) {
         this.context = context;
         // 'firstParam' and 'secondParam' should be used
         // here somehow to start any internal resource
@@ -56,6 +56,7 @@ public class SourceMonitorThread extends Thread {
     }
 
     public synchronized List<String> getCurrentSources() {
+
         return Arrays.asList("source-1", "source-2", "source-3");
     }
 

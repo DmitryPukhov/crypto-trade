@@ -2,9 +2,9 @@ package dmitrypukhov.cryptotrade.kafka.connect.binance;
 
 import org.apache.kafka.common.config.Config;
 import org.apache.kafka.common.config.ConfigDef;
-import org.apache.kafka.common.config.ConfigValue;
+//import org.apache.kafka.common.config.ConfigValue;
 import org.apache.kafka.connect.connector.Task;
-import org.apache.kafka.connect.errors.ConnectException;
+//import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.source.SourceConnector;
 import org.apache.kafka.connect.util.ConnectorUtils;
 import org.slf4j.Logger;
@@ -40,25 +40,23 @@ public class BinanceSourceConnector extends SourceConnector {
     @Override
     public Config validate(Map<String, String> connectorConfigs) {
         Config config = super.validate(connectorConfigs);
-        List<ConfigValue> configValues = config.configValues();
-        boolean missingTopicDefinition = true;
-        for (ConfigValue configValue : configValues) {
-            if (configValue.name().equals(FIRST_REQUIRED_PARAM_CONFIG)
-            || configValue.name().equals(SECOND_REQUIRED_PARAM_CONFIG)) {
-                if (configValue.value() != null) {
-                    missingTopicDefinition = false;
-                    break;
-                }
-            }
-        }
-        if (missingTopicDefinition) {
-            throw new ConnectException(String.format(
-                "There is no definition of [XYZ] in the "
-                + "configuration. Either the property "
-                + "'%s' or '%s' must be set in the configuration.",
-                FIRST_NONREQUIRED_PARAM_CONFIG,
-                SECOND_NONREQUIRED_PARAM_CONFIG));
-        }
+//        List<ConfigValue> configValues = config.configValues();
+//        boolean missingTopicDefinition = true;
+//        for (ConfigValue configValue : configValues) {
+//            if (configValue.name().equals(BINANCE_URI)) {
+//                if (configValue.value() != null) {
+//                    missingTopicDefinition = false;
+//                    break;
+//                }
+//            }
+//        }
+//        if (missingTopicDefinition) {
+//            throw new ConnectException(String.format(
+//                "There is no definition of [XYZ] in the "
+//                + "configuration. Either the property "
+//                + "'%s'must be set in the configuration.",
+//                BINANCE_URI));
+//        }
         return config;
     }
 
@@ -66,11 +64,11 @@ public class BinanceSourceConnector extends SourceConnector {
     public void start(Map<String, String> originalProps) {
         this.originalProps = originalProps;
         config = new BinanceSourceConnectorConfig(originalProps);
-        String firstParam = config.getString(FIRST_NONREQUIRED_PARAM_CONFIG);
-        String secondParam = config.getString(SECOND_NONREQUIRED_PARAM_CONFIG);
         int monitorThreadTimeout = config.getInt(MONITOR_THREAD_TIMEOUT_CONFIG);
+        //String binanceUri  = config.getString(BINANCE_URI);
+        String binanceUri = "wss://testnet.binance.vision";
         sourceMonitorThread = new SourceMonitorThread(
-            context, firstParam, secondParam, monitorThreadTimeout);
+            context, binanceUri, monitorThreadTimeout);
         sourceMonitorThread.start();
     }
 

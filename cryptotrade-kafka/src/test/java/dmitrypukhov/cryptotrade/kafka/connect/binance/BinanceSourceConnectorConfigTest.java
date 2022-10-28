@@ -23,8 +23,7 @@ public class BinanceSourceConnectorConfigTest {
     public void checkingNonRequiredDefaults() {
         Map<String, String> props = new HashMap<>();
         BinanceSourceConnectorConfig config = new BinanceSourceConnectorConfig(props);
-        assertEquals("foo", config.getString(FIRST_NONREQUIRED_PARAM_CONFIG));
-        assertEquals("bar", config.getString(SECOND_NONREQUIRED_PARAM_CONFIG));
+        assertEquals("wss://testnet.binance.vision", config.getString(BINANCE_URI));
     }
 
 }

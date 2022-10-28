@@ -1,17 +1,31 @@
 package dmitrypukhov.cryptotrade.kafka.connect.binance;
 
 import org.apache.kafka.connect.source.SourceRecord;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dmitrypukhov.cryptotrade.kafka.connect.binance.BinanceSourceConnectorConfig.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BinanceSourceTaskTest {
+
+    @Test
+    @Ignore
+    public void shouldConnectToBinance() {
+        Map<String, String> taskProps = getTaskProps(PropertiesUtil.propertiesMap());
+
+        BinanceSourceTask task = new BinanceSourceTask();
+        assertDoesNotThrow(() -> {
+            task.start(taskProps);
+            Thread.currentThread().join(5000);
+            List<SourceRecord> records = task.poll();
+            assertEquals(3, records.size());
+        });
+    }
 
     @Test
     public void taskVersionShouldMatch() {
@@ -20,10 +34,9 @@ public class BinanceSourceTaskTest {
     }
 
     @Test
+    @Ignore
     public void checkNumberOfRecords() {
         Map<String, String> connectorProps = new HashMap<>();
-        connectorProps.put(FIRST_REQUIRED_PARAM_CONFIG, "Kafka");
-        connectorProps.put(SECOND_REQUIRED_PARAM_CONFIG, "Connect");
         Map<String, String> taskProps = getTaskProps(connectorProps);
         BinanceSourceTask task = new BinanceSourceTask();
         assertDoesNotThrow(() -> {
@@ -39,5 +52,4 @@ public class BinanceSourceTaskTest {
         List<Map<String, String>> taskConfigs = connector.taskConfigs(1);
         return taskConfigs.get(0);
     }
-    
 }

@@ -1,5 +1,7 @@
 package dmitrypukhov.cryptotrade.kafka.connect.binance;
 
+import com.binance.connector.client.impl.WebsocketClientImpl;
+import lombok.Getter;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
@@ -7,16 +9,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
-import static dmitrypukhov.cryptotrade.kafka.connect.binance.BinanceSourceConnectorConfig.*;
+import static dmitrypukhov.cryptotrade.kafka.connect.binance.BinanceSourceConnectorConfig.MONITOR_THREAD_TIMEOUT_CONFIG;
 
 public class BinanceSourceTask extends SourceTask {
+    @Getter
+    private static String ticker = "btcusdt";
 
     private static Logger log = LoggerFactory.getLogger(BinanceSourceTask.class);
 
     private BinanceSourceConnectorConfig config;
     private int monitorThreadTimeout;
     private List<String> sources;
+    private Deque<String> messages = new ConcurrentLinkedDeque<>();
 
     @Override
     public String version() {
@@ -27,21 +33,33 @@ public class BinanceSourceTask extends SourceTask {
     public void start(Map<String, String> properties) {
         config = new BinanceSourceConnectorConfig(properties);
         monitorThreadTimeout = config.getInt(MONITOR_THREAD_TIMEOUT_CONFIG);
-        String sourcesStr = properties.get("sources");
-        sources = Arrays.asList(sourcesStr.split(","));
+
+        // Create binance web socket client
+        //String uri = properties.get("dmitrypukhov.cryptotrade.input.binance.uri");
+        String uri = "wss://testnet.binance.vision"; // todo: remove hard code
+        log.info(String.format("Creating Binance source task from %s", uri));
+        WebsocketClientImpl client = new WebsocketClientImpl(uri); // defaults to production environment unless stated,
+
+        client.symbolTicker(ticker, ((event) -> {
+            // Add received message to the queue
+            log.debug(String.format("Got the message. Ticker: %s, message: %s", ticker, event));
+            messages.add(event);
+        }));
     }
 
     @Override
     public List<SourceRecord> poll() throws InterruptedException {
-        Thread.sleep(monitorThreadTimeout / 2);
+
         List<SourceRecord> records = new ArrayList<>();
-        for (String source : sources) {
-            log.info("Polling data from the source '" + source + "'");
+        while (!messages.isEmpty()) {
+            String msg = messages.pop();
+            log.debug("Adding source message %s", msg);
+
             records.add(new SourceRecord(
-                Collections.singletonMap("source", source),
-                Collections.singletonMap("offset", 0),
-                source, null, null, null, Schema.BYTES_SCHEMA,
-                String.format("Data from %s", source).getBytes()));
+                    Collections.singletonMap("source", 0),
+                    Collections.singletonMap("offset", 0),
+                    ticker, null, null, null, Schema.BYTES_SCHEMA,
+                    msg.getBytes()));
         }
         return records;
     }
@@ -49,5 +67,4 @@ public class BinanceSourceTask extends SourceTask {
     @Override
     public void stop() {
     }
-
 }

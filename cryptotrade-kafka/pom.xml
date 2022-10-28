@@ -14,16 +14,31 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <connect.api.version>3.0.0</connect.api.version>
+        <binance.connector.version>1.10.0</binance.connector.version>
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
-        <testcontainers.version>1.16.2</testcontainers.version>    </properties>
+        <testcontainers.version>1.16.2</testcontainers.version>
+        <lombok.version>1.18.24</lombok.version>
+    </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>connect-api</artifactId>
             <version>${connect.api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.binance</groupId>
+            <artifactId>binance-connector-java</artifactId>
+            <version>${binance.connector.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
