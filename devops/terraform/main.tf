@@ -8,7 +8,8 @@ variable "psql_pwd" { default = "<please set the value in file main.auto.tfvars>
 variable "mongodb_pwd" { default = "<please set the value in file main.auto.tfvars>" }
 variable "clickhouse_pwd" { default = "<please set the value in file main.auto.tfvars>" }
 variable hadoop_public_key_file { default = "<please set the value in file main.auto.tfvars>" }
-
+variable kafka_user {default = "<please set kafka user in file main.auto.tfvars"}
+variable kafka_pwd {default = "<please set kafka user password in file main.auto.tfvars"}
 
 #############################################################
 # Global vars
@@ -19,6 +20,7 @@ variable is_bucket { default = 1 }
 variable is_pgsql { default = 1 }
 variable is_clickhouse { default = 1 }
 variable is_mongodb { default = 1 }
+variable is_kafka { default = 1 }
 
 locals {
   bucket_name           = "dmitrypukhov-cryptotrade"

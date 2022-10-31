@@ -137,5 +137,40 @@ resource "yandex_vpc_security_group" "sg-mongodb" {
     protocol       = "TCP"
     v4_cidr_blocks = [ "0.0.0.0/0" ]
   }
-
 }
+
+######################################################
+# Kafka sg
+######################################################
+
+resource "yandex_vpc_security_group" "sg-kafka" {
+  count = var.is_kafka
+
+  name       = "sg-kafka"
+  network_id = yandex_vpc_network.hadoop-network.id
+  ingress {
+    description    = "Kafka"
+    port         = 8083
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    description    = "Kafka"
+    port         = 9092
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    description    = "Clickhouse"
+    port         = 29092
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    description    = "Zookeeper"
+    port         = 2181
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+}
+
