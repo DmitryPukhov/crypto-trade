@@ -1,17 +1,24 @@
 package dmitrypukhov.cryptotrade.kafka.connect.binance;
 
 import org.apache.kafka.connect.connector.Task;
-import org.apache.kafka.connect.errors.ConnectException;
+import org.apache.kafka.connect.source.SourceConnector;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BinanceSourceConnectorTest {
-
+    /**
+     * Not a test, just an entry point for dev
+     */
+    @Test
+    @Ignore
+    void startDev() throws InterruptedException {
+        SourceConnector connector = new BinanceSourceConnector();
+        connector.start(PropertiesUtil.propertiesMap());
+        Thread.currentThread().join(10000);
+        connector.stop();
+    }
     @Test
     public void connectorVersionShouldMatch() {
         String version = PropertiesUtil.getConnectorVersion();

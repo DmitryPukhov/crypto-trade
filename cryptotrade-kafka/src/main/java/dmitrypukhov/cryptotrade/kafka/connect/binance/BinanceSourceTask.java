@@ -16,7 +16,7 @@ import static dmitrypukhov.cryptotrade.kafka.connect.binance.BinanceSourceConnec
 
 public class BinanceSourceTask extends SourceTask {
     @Getter
-    private static String ticker = "btcusdt";
+    private static String symbol = "btcusdt";
 
     private static Logger log = LoggerFactory.getLogger(BinanceSourceTask.class);
 
@@ -43,9 +43,9 @@ public class BinanceSourceTask extends SourceTask {
         log.info(String.format("Creating Binance source task from %s", uri));
         WebsocketClientImpl client = new WebsocketClientImpl(uri); // defaults to production environment unless stated,
 
-        client.symbolTicker(ticker, ((event) -> {
+        client.symbolTicker(symbol, ((event) -> {
             // Add received message to the queue
-            log.debug(String.format("Got the message. Ticker: %s, message: %s", ticker, event));
+            log.debug(String.format("Got the message. Symbol: %s, message: %s", symbol, event));
             messages.add(event);
         }));
     }
@@ -56,12 +56,13 @@ public class BinanceSourceTask extends SourceTask {
         List<SourceRecord> records = new ArrayList<>();
         while (!messages.isEmpty()) {
             String msg = messages.pop();
-            log.debug("Adding source message %s", msg);
+            String topic = String.format("raw.%s.ticker", symbol);
+            log.debug("Adding new message to topic: %s, msg: %s", msg);
 
             records.add(new SourceRecord(
                     Collections.singletonMap("source", 0),
                     Collections.singletonMap("offset", 0),
-                    ticker, null, null, null, Schema.BYTES_SCHEMA,
+                    topic, null, null, null, Schema.BYTES_SCHEMA,
                     msg.getBytes()));
         }
         return records;
