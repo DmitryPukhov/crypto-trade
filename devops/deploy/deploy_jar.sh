@@ -5,14 +5,14 @@ tmp_dir=./tmp/cryptotrade-spark
 jar_name=cryptotrade-spark-assembly-0.1.0-SNAPSHOT.jar
 jar_path="$tmp_dir/$jar_name"
 app_properties_path="$tmp_dir/application.properties"
-scala_code_dir=../../crypto-trade-spark
+scala_code_dir=../../cryptotrade-spark
 cloud_dir=s3://dmitrypukhov-cryptotrade/app/
 ch_ssh_path=../.ssh/ch.CA.pem
 
 set -e
 # Build the jar, copy to current folder
 echo "Build the jar"
-rm $jar_path
+rm -f $jar_path
 mkdir -p $tmp_dir
 cd $scala_code_dir || exit
 sbt clean assembly # Build command
