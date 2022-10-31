@@ -34,6 +34,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+            <version>${connect.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>io.github.binance</groupId>
             <artifactId>binance-connector-java</artifactId>
             <version>${binance.connector.version}</version>
