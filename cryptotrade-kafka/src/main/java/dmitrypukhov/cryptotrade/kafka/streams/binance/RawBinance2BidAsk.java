@@ -19,14 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class RawBinance2BidAsk {
+public final class RawBinance2BidAsk {
+    private RawBinance2BidAsk() { }
+
     private static Logger log = LoggerFactory.getLogger(RawBinance2BidAsk.class);
     private static ObjectMapper mapper = new ObjectMapper();
-    private static TypeReference<Map<String,String>> bidAskTypeRef = new TypeReference<>() {
+    private static TypeReference<Map<String, String>> bidAskTypeRef = new TypeReference<>() {
     };
 
-    static final String inputTopic = "raw.btcusdt.ticker";
-    static final String outputTopic = "btcusdt.bidask";
+    private static String inputTopic = "raw.btcusdt.ticker";
+    private static String outputTopic = "btcusdt.bidask";
 
     /**
      * The Streams application as a whole can be launched like any normal Java application that has a `main()` method.
@@ -101,7 +103,7 @@ public class RawBinance2BidAsk {
         textLines.mapValues(RawBinance2BidAsk::raw2BidAsk).to(outputTopic);
     }
 
-    static Map<String,String> raw2BidAsk(Map<String,String> rawMap) {
+    static Map<String, String> raw2BidAsk(Map<String, String> rawMap) {
         Map<String, String> processedMap = new HashMap<>();
         processedMap.put("datetime", LocalDateTime.now().toString());
         processedMap.put("symbol", rawMap.get("s"));
@@ -118,8 +120,8 @@ public class RawBinance2BidAsk {
     static String raw2BidAsk(String rawString) {
         String out = "";
         try {
-            Map<String,String> rawMap = mapper.readValue(rawString, bidAskTypeRef);
-            Map<String,String> bidAskMap = raw2BidAsk(rawMap);
+            Map<String, String> rawMap = mapper.readValue(rawString, bidAskTypeRef);
+            Map<String, String> bidAskMap = raw2BidAsk(rawMap);
             out = mapper.writeValueAsString(bidAskMap);
 
         } catch (JsonProcessingException e) {
