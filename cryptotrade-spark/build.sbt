@@ -1,4 +1,4 @@
-name := "crypto-trade-spark"
+name := "cryptotrade-spark"
 
 // Versions
 scalaVersion := "2.12.10"

@@ -1,8 +1,8 @@
 #############################################################################
 # Deploy scala jar
 #############################################################################
-tmp_dir=./tmp/crypto-trade-spark
-jar_name=crypto-trade-spark-assembly-0.1.0-SNAPSHOT.jar
+tmp_dir=./tmp/cryptotrade-spark
+jar_name=cryptotrade-spark-assembly-0.1.0-SNAPSHOT.jar
 jar_path="$tmp_dir/$jar_name"
 app_properties_path="$tmp_dir/application.properties"
 scala_code_dir=../../crypto-trade-spark

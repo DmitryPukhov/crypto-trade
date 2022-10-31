@@ -1,10 +1,10 @@
 #############################################################################
 # Deploy python
 #############################################################################
-app_dir=../../cryptotradespark
-tmp_dir=./tmp/cryptotradespark
+app_dir=../../cryptotrade-pyspark
+tmp_dir=./tmp/cryptotrade-pyspark
 tmp_app_dir=$tmp_dir/app
-cloud_dir=s3://dmitrypukhov-cryptotrade/app/cryptotradespark
+cloud_dir=s3://dmitrypukhov-cryptotrade/app/cryptotrade-pyspark
 rm -r $tmp_dir
 mkdir -p $tmp_dir
 
@@ -38,14 +38,14 @@ rm -r ./yaml
 
 #app
 cd $tmp_app_dir || exit
-zip -r cryptotradespark.zip ./
+zip -r cryptotrade-pyspark.zip ./
 cd "$OLDPWD" || exit
-mv $tmp_app_dir/cryptotradespark.zip $tmp_dir/
+mv $tmp_app_dir/cryptotrade-pyspark.zip $tmp_dir/
 
 # Copy the app to the cloud
 echo "Copy $tmp_dir to $cloud_dir"
 s3cmd rm -r $cloud_dir
-s3cmd sync -f $tmp_app_dir/ $cloud_dir/cryptotradespark/
+s3cmd sync -f $tmp_app_dir/ $cloud_dir/cryptotrade-pyspark/
 s3cmd put -f $tmp_dir/*.zip $cloud_dir/
 
 
