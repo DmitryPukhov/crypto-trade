@@ -15,7 +15,7 @@ public class BinanceSourceConnectorTest {
     @Ignore
     void startDev() throws InterruptedException {
         SourceConnector connector = new BinanceSourceConnector();
-        connector.start(PropertiesUtil.propertiesMap());
+        connector.start(PropertiesUtil.getPropMap());
         Thread.currentThread().join(10000);
         connector.stop();
     }

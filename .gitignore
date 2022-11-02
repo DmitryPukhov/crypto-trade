@@ -19,6 +19,9 @@ terraform.tfstate.backup
 .bsp
 # Configs with current environment
 *.dev.conf
+*.dev.properties
+client.truststore.jks
+
 devops/deploy/application.properties.template
 devops/deploy/application.properties
 devops/deploy/tmp
@@ -29,4 +32,3 @@ devops/.ssh
 .vscode
 *.lock
 www/cryptotrade/package-lock.json
-

@@ -18,7 +18,7 @@ public class BinanceSourceTaskTest {
      * Not a test, just a placeholder for debugging
      */
     public void shouldConnectToBinance() {
-        Map<String, String> taskProps = getTaskProps(PropertiesUtil.propertiesMap());
+        Map<String, String> taskProps = getTaskProps(PropertiesUtil.getPropMap());
 
         BinanceSourceTask task = new BinanceSourceTask();
         assertDoesNotThrow(() -> {

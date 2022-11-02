@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.Properties;
 
 public final class RawBinance2BidAsk {
-    private RawBinance2BidAsk() { }
+    private RawBinance2BidAsk() {
+    }
 
     private static Logger log = LoggerFactory.getLogger(RawBinance2BidAsk.class);
     private static ObjectMapper mapper = new ObjectMapper();
@@ -35,10 +36,9 @@ public final class RawBinance2BidAsk {
      */
     public static void main(final String[] args) {
 
-        final String bootstrapServers = PropertiesUtil.propertiesMap().get("dmitrypukhov.cryptotrade.kafka.bootstrapservers");
-
         // Configure the Streams application.
-        final Properties streamsConfiguration = getStreamsConfiguration(bootstrapServers);
+        final Properties streamsConfiguration = getStreamsConfiguration();
+
 
         // Define the processing topology of the Streams application.
         final StreamsBuilder builder = new StreamsBuilder();
@@ -70,26 +70,23 @@ public final class RawBinance2BidAsk {
      * Various Kafka Streams related settings are defined here such as the location of the target Kafka cluster to use.
      * Additionally, you could also define Kafka Producer and Kafka Consumer settings when needed.
      *
-     * @param bootstrapServers Kafka cluster address
      * @return Properties getStreamsConfiguration
      */
-    static Properties getStreamsConfiguration(final String bootstrapServers) {
+    static Properties getStreamsConfiguration() {
         final Properties streamsConfiguration = new Properties();
-        // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
-        // against which the application is run.
+
+
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, MethodHandles.lookup().lookupClass().getSimpleName());
-        // Where to find Kafka broker(s).
-        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        // Specify default (de)serializers for record keys and for record values.
         streamsConfiguration.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         streamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        // Records should be flushed every 10 seconds. This is less than the default
-        // in order to keep this example interactive.
-        //streamsConfiguration.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10 * 1000);
-        // For illustrative purposes we disable record caches.
-        //streamsConfiguration.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
-        // Use a temporary directory for storing state, which will be automatically removed after the test.
-        //streamsConfiguration.put(StreamsConfig.STATE_DIR_CONFIG, TestUtils.tempDirectory().getAbsolutePath());
+
+        // Put kafka related properties, replacing not-kafka prefixes
+        PropertiesUtil.getPropMap().keySet().stream()
+                .filter(key -> key.startsWith("dmitrypukhov.cryptotrade.kafka"))
+                .forEach(key -> streamsConfiguration.put(
+                        key.replaceFirst("dmitrypukhov.cryptotrade.kafka.", ""),
+                        PropertiesUtil.getPropMap().get(key)));
+
         return streamsConfiguration;
     }
 
