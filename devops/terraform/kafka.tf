@@ -9,6 +9,10 @@ resource "yandex_mdb_kafka_cluster" "cryptotrade-kafka" {
   user {
     name = var.kafka_user
     password = var.kafka_pwd
+    permission {
+      topic_name = "*"
+      role       = "ACCESS_ROLE_ADMIN"
+    }
   }
   config {
     assign_public_ip = true

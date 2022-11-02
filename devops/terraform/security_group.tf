@@ -156,6 +156,13 @@ resource "yandex_vpc_security_group" "sg-kafka" {
   }
   ingress {
     description    = "Kafka"
+    port         = 9091
+    protocol       = "TCP"
+    v4_cidr_blocks = [ "0.0.0.0/0" ]
+  }
+
+  ingress {
+    description    = "Kafka"
     port         = 9092
     protocol       = "TCP"
     v4_cidr_blocks = [ "0.0.0.0/0" ]
