@@ -23,23 +23,35 @@ public class BinanceSourceConnectorConfig extends AbstractConfig {
 
     private static ConfigDef createConfigDef() {
         ConfigDef configDef = new ConfigDef();
-        addParams(configDef);
+
+        // Add kafka properties, loaded from app.properties
+        PropertiesUtil.getKafkaConfiguration().forEach((key, value) -> configDef.define(key.toString(),
+                Type.STRING,
+                value,
+                Importance.HIGH,
+                key.toString()
+        ));
+
+        updateParams(configDef);
+        // Add some kafka required props
+        //addParams(configDef);
         return configDef;
     }
 
-    private static void addParams(final ConfigDef configDef) {
+    private static void updateParams(final ConfigDef configDef) {
+
         configDef.define(
-            BINANCE_URI,
-            Type.STRING,
-            PropertiesUtil.getBinanceWebSocketUri(),
-            Importance.HIGH,
-            BINANCE_URI_DOC)
-        .define(
-            MONITOR_THREAD_TIMEOUT_CONFIG,
-            Type.INT,
-            MONITOR_THREAD_TIMEOUT_DEFAULT,
-            Importance.LOW,
-            MONITOR_THREAD_TIMEOUT_DOC);
+                        BINANCE_URI,
+                        Type.STRING,
+                        PropertiesUtil.getBinanceWebSocketUri(),
+                        Importance.HIGH,
+                        BINANCE_URI_DOC)
+                .define(
+                MONITOR_THREAD_TIMEOUT_CONFIG,
+                Type.INT,
+                MONITOR_THREAD_TIMEOUT_DEFAULT,
+                Importance.LOW,
+                MONITOR_THREAD_TIMEOUT_DOC);
     }
 
 }

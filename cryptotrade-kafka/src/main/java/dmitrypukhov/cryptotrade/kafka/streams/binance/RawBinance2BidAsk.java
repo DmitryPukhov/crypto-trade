@@ -5,15 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dmitrypukhov.cryptotrade.kafka.connect.binance.PropertiesUtil;
 
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +34,7 @@ public final class RawBinance2BidAsk {
     public static void main(final String[] args) {
 
         // Configure the Streams application.
-        final Properties streamsConfiguration = getStreamsConfiguration();
+        final Properties streamsConfiguration = PropertiesUtil.getKafkaConfiguration();
 
 
         // Define the processing topology of the Streams application.
@@ -64,31 +61,7 @@ public final class RawBinance2BidAsk {
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     }
 
-    /**
-     * Configure the Streams application.
-     * <p>
-     * Various Kafka Streams related settings are defined here such as the location of the target Kafka cluster to use.
-     * Additionally, you could also define Kafka Producer and Kafka Consumer settings when needed.
-     *
-     * @return Properties getStreamsConfiguration
-     */
-    static Properties getStreamsConfiguration() {
-        final Properties streamsConfiguration = new Properties();
 
-
-        streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, MethodHandles.lookup().lookupClass().getSimpleName());
-        streamsConfiguration.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        streamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-
-        // Put kafka related properties, replacing not-kafka prefixes
-        PropertiesUtil.getPropMap().keySet().stream()
-                .filter(key -> key.startsWith("dmitrypukhov.cryptotrade.kafka"))
-                .forEach(key -> streamsConfiguration.put(
-                        key.replaceFirst("dmitrypukhov.cryptotrade.kafka.", ""),
-                        PropertiesUtil.getPropMap().get(key)));
-
-        return streamsConfiguration;
-    }
 
     /**
      * Define the processing topology for Word Count.
