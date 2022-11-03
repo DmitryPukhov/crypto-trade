@@ -12,7 +12,8 @@ resource "yandex_kubernetes_cluster" "cryptotrade-k8s" {
   service_account_id      = yandex_iam_service_account.sa-hadoop.id
   node_service_account_id = yandex_iam_service_account.sa-hadoop.id
   depends_on              = [
-    #yandex_resourcemanager_folder_iam_binding.iam-k8s-editor,
+    yandex_resourcemanager_folder_iam_binding.iam-editor,
+    yandex_resourcemanager_folder_iam_binding.iam-k8s-admin,
     yandex_resourcemanager_folder_iam_binding.iam-k8s-images-puller
   ]
 }
