@@ -8,6 +8,7 @@ resource "yandex_kubernetes_cluster" "cryptotrade-k8s" {
       zone      = yandex_vpc_subnet.hadoop-subnet-ru-central-1b.zone
       subnet_id = yandex_vpc_subnet.hadoop-subnet-ru-central-1b.id
     }
+    public_ip = true
   }
   service_account_id      = yandex_iam_service_account.sa-hadoop.id
   node_service_account_id = yandex_iam_service_account.sa-hadoop.id
