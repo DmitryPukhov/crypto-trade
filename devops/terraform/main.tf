@@ -15,12 +15,13 @@ variable kafka_pwd {default = "<please set kafka user password in file main.auto
 # Global vars
 #############################################################
 # On/off components creation for dev
-variable is_hadoop { default = 1 }
-variable is_bucket { default = 1 }
-variable is_pgsql { default = 1 }
-variable is_clickhouse { default = 1 }
-variable is_mongodb { default = 1 }
-variable is_kafka { default = 1 }
+variable is_hadoop { default = 0 }
+variable is_bucket { default = 0 }
+variable is_pgsql { default = 0 }
+variable is_clickhouse { default = 0 }
+variable is_mongodb { default = 0 }
+variable is_kafka { default = 0 }
+variable is_k8s {default = 1}
 
 locals {
   bucket_name           = "dmitrypukhov-cryptotrade"

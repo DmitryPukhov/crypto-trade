@@ -181,3 +181,26 @@ resource "yandex_vpc_security_group" "sg-kafka" {
   }
 }
 
+######################################################
+# K82 sg
+######################################################
+resource "yandex_vpc_security_group" "sg-k8s" {
+  count = var.is_kafka
+
+  name       = "sg-k82"
+  network_id = yandex_vpc_network.hadoop-network.id
+
+  ingress {
+    protocol       = "ANY"
+    description    = "Правило разрешает отладочные ICMP-пакеты из внутренних подсетей."
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    protocol       = "ANY"
+    description    = "Правило разрешает весь исходящий трафик. Узлы могут связаться с Yandex Container Registry, Yandex Object Storage, Docker Hub и т. д."
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    from_port      = 0
+    to_port        = 65535
+  }
+}
+
