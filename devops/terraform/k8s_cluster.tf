@@ -1,7 +1,7 @@
-resource "yandex_kubernetes_cluster" "cryptotrade-ki2" {
+resource "yandex_kubernetes_cluster" "cryptotrade-k8s" {
   network_id = yandex_vpc_network.hadoop-network.id
+  name = "cryptotrade-k8s"
   master {
-
     zonal {
       zone      = yandex_vpc_subnet.hadoop-subnet-ru-central-1b.zone
       subnet_id = yandex_vpc_subnet.hadoop-subnet-ru-central-1b.id
@@ -37,3 +37,4 @@ resource "yandex_resourcemanager_folder_iam_binding" "images-puller" {
     "serviceAccount:${yandex_iam_service_account.sa-hadoop.id}"
   ]
 }
+
