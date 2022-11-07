@@ -1,14 +1,16 @@
 root_dir=../../..
-jar_name=cryptotrade-kafka-1.0-SNAPSHOT.jar
-src_jar="$root_dir/cryptotrade-kafka/target/components/$jar_name"
+
+
+jar_name_only="cryptotrade-kafka-1.0-SNAPSHOT"
+src_jar="$root_dir/cryptotrade-kafka/target/components/$jar_name_only.jar"
+src_lib_dir="$root_dir/cryptotrade-kafka/target/components/packages/dmitrypukhov-$jar_name_only/dmitrypukhov-$jar_name_only/lib"
 tmp_dir=./tmp
+rm -r -f $tmp_dir
 mkdir -p $tmp_dir
 
-echo "Copy $src_jar to $tmp_dir"
-ls $root_dir
-ls $src_jar
-cp -f $src_jar "$tmp_dir/$jar_name"
-ls $tmp_dir
+echo "Copy $src_jar with libs to $tmp_dir"
+ls $src_lib_dir/*
+cp $src_lib_dir/*.jar $tmp_dir
 
 echo "Create worker.properties in $tmp_dir"
 host_name=$(yc managed-kafka cluster list-hosts --name cryptotrade-kafka | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n/ /g')
