@@ -8,6 +8,13 @@ tmp_dir=./tmp
 rm -r -f $tmp_dir
 mkdir -p $tmp_dir
 
+set -e
+echo "Build the jar"
+cd $root_dir/cryptotrade-kafka
+mvn clean package
+cd "$OLDPWD" || exit
+
+
 echo "Copy $src_jar with libs to $tmp_dir"
 ls $src_lib_dir/*
 cp $src_lib_dir/*.jar $tmp_dir
@@ -27,4 +34,4 @@ echo "Copy certs"
 cp -r .ssh $tmp_dir
 
 echo "Build docker image"
-sudo docker build .
+sudo docker build -t cryptotrade-kafka .

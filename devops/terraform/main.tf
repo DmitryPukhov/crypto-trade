@@ -20,9 +20,9 @@ variable is_bucket { default = 0 }
 variable is_pgsql { default = 0 }
 variable is_clickhouse { default = 0 }
 variable is_mongodb { default = 0 }
-variable is_kafka { default = 0 }
+variable is_kafka { default = 1 }
 variable is_k8s {default = 0}
-variable is_container_registry{default=1}
+variable is_container_registry{default=0}
 
 locals {
   bucket_name           = "dmitrypukhov-cryptotrade"
