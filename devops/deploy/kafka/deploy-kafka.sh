@@ -23,6 +23,8 @@ sed "s/\($bootstrap_servers_property\s*\=\s*\).*/\1${host}/g" "worker.properties
 echo "Create binance.connector.properties in $tmp-dir"
 cp -f binance.connector.properties.template "$tmp_dir/binance.connector.properties"
 
+echo "Copy certs"
+cp -r .ssh $tmp_dir
 
 echo "Build docker image"
 sudo docker build .

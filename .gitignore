@@ -23,6 +23,7 @@ terraform.tfstate.backup
 *.dev.properties
 client.truststore.jks
 
+*.properties.template
 devops/deploy/application.properties.template
 devops/deploy/application.properties
 devops/deploy/tmp
