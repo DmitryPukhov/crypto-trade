@@ -34,4 +34,7 @@ echo "Copy certs"
 cp -r .ssh $tmp_dir
 
 echo "Build docker image"
-sudo docker build -t cryptotrade-kafka .
+registry_id=$(yc container registry list | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n//g')
+tag_name="cr.yandex/$registry_id/cryptotrade-kafka"
+sudo docker build -t "$tag_name" .
+sudo docker push "$tag_name"
