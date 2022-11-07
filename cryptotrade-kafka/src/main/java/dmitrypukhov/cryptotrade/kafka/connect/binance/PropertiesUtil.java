@@ -1,17 +1,12 @@
 package dmitrypukhov.cryptotrade.kafka.connect.binance;
 
 import org.apache.commons.configuration2.CombinedConfiguration;
-import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.OverrideCombiner;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
