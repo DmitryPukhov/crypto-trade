@@ -1,14 +1,14 @@
 root_dir=../../..
-
-
 jar_name_only="cryptotrade-kafka-1.0-SNAPSHOT"
 src_jar="$root_dir/cryptotrade-kafka/target/components/$jar_name_only.jar"
 src_lib_dir="$root_dir/cryptotrade-kafka/target/components/packages/dmitrypukhov-$jar_name_only/dmitrypukhov-$jar_name_only/lib"
 tmp_dir=./tmp
+
+set -e
+
 rm -r -f $tmp_dir
 mkdir -p $tmp_dir
 
-set -e
 echo "Build the jar"
 cd $root_dir/cryptotrade-kafka
 mvn clean package
@@ -37,23 +37,4 @@ echo "Build docker image"
 registry_id=$(yc container registry list | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n//g')
 image_tag="cr.yandex/$registry_id/cryptotrade-kafka"
 sudo docker build -t "$image_tag" .
-#sudo docker push "$image_tag"
-
-echo "Create serverless container if does not exist"
-binance_connector_name="binance-kafka-connector"
-if [ -z "$(yc serverless container list | grep "$binance_connector_name")" ]
-then
-  yc serverless container create --name $binance_connector_name
-fi
-
-
-echo "Deploy image $image_tag to serverless container"
-service_account_id="$(yc iam service-account get cryptotrade-hadoop | head -n 1 | awk '{print $2}')"
-yc serverless container revision deploy \
-  --container-name $binance_connector_name \
-  --image $image_tag \
-  --cores 1 \
-  --memory 1GB \
-  --concurrency 1 \
-  --execution-timeout 30s \
-  --service-account-id $service_account_id
+sudo docker push "$image_tag"
