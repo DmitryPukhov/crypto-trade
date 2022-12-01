@@ -21,9 +21,9 @@ object BinanceTransform extends Serializable {
       time = LocalDateTime.now(),
       symbol = bidAskMap("s"),
       bid = BigDecimal(bidAskMap("b")),
-      bidQty = bidAskMap("B").toInt,
+      bidQty = BigDecimal(bidAskMap("B")),
       ask = BigDecimal(bidAskMap("a")),
-      askQty = bidAskMap("A").toInt
+      askQty = BigDecimal(bidAskMap("A"))
     )
   }
 }
