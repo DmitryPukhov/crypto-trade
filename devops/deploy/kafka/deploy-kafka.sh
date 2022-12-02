@@ -33,8 +33,15 @@ cp -f binance.connector.properties.template "$tmp_dir/binance.connector.properti
 echo "Copy certs"
 cp -r .ssh $tmp_dir
 
-echo "Build docker image"
+echo "Build kafka-connect docker image"
 registry_id=$(yc container registry list | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n//g')
-image_tag="cr.yandex/$registry_id/cryptotrade-kafka"
-sudo docker build -t "$image_tag" .
+kc_image_tag="cr.yandex/$registry_id/cryptotrade-kafka-connect"
+sudo docker build -t "$kc_image_tag" -f Dockerfile-kafka-connect .
+
+echo "Build kafka-streams docker image"
+ks_image_tag="cr.yandex/$registry_id/cryptotrade-kafka-streams"
+sudo docker build -t "$ks_image_tag" -f Dockerfile-kafka-streams .
+
+echo "Pushing docker images"
 sudo docker push "$image_tag"
+sudo docker push "$ks_image_tag"

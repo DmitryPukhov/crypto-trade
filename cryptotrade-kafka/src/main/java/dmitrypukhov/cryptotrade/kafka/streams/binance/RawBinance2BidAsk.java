@@ -94,7 +94,7 @@ public final class RawBinance2BidAsk {
             Map<String, String> bidAskMap = raw2BidAsk(rawMap);
             out = mapper.writeValueAsString(bidAskMap);
 
-        } catch (JsonProcessingException e) {
+        } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
         return out;
