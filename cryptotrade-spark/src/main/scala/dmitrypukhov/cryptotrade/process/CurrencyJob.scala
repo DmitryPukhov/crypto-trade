@@ -20,7 +20,7 @@ object CurrencyJob {
 
   /** Raw layer data location */
   private lazy val rawRootDir = spark.conf.get("dmitrypukhov.cryptotrade.data.raw.dir")
-
+  private lazy val dataMartsDir = spark.conf.get("dmitrypukhov.cryptotrade.data.marts.dir")
   /** Currency symbol and candles interval */
   val symbol = "btcusdt"
   val interval = "1min"
@@ -39,6 +39,16 @@ object CurrencyJob {
 
   //  /** Map jobname -> job func, keys are in default execution order */
   //  val jobMap: Map[String, () => Unit] = ListMap("raw2ohlcv" -> raw2Ohlcv, "ohlcv2macd" -> ohlcv2Macd, "ohlcv2psql" -> ohlcv2Psql, "macd2psql" -> macd2Psql, "ohlcv2click" -> ohlcv2Click, "macd2click" -> macd2Click)
+  val defaultProcessSeq = Seq(
+    "raw2ohlcv",
+    "ohlcv2macd",
+    "ohlcv2psql",
+    "ohlcv2csv",
+    "macd2psql",
+    "ohlcv2click",
+    "macd2click",
+    "ohlcv2mongo",
+    "macd2mongo")
 
   /**
    * Transform raw data, fill in 2 data marts: candles and macd
@@ -47,7 +57,11 @@ object CurrencyJob {
     // Set database
     AppTool.ensureHiveDb
 
-    val jobNames = args.flatMap(arg => arg.split("\\s*,\\s*")).toSeq
+    val jobNames: Seq[String] = if (args.nonEmpty)
+      args.flatMap(arg => arg.split("\\s*,\\s*"))
+    else
+      defaultProcessSeq //.orElse(defaultProcessSeq)
+
     log.info(s"Jobs to run: ${jobNames.mkString(",")}")
     // Run jobs one by one
     jobNames.foreach(runJob)
@@ -56,6 +70,7 @@ object CurrencyJob {
   def runJob(name: String): Unit = {
     name.toLowerCase match {
       case "raw2ohlcv" => raw2Ohlcv()
+      case "raw2csv" => raw2Csv()
       case "ohlcv2macd" => ohlcv2Macd()
       case "ohlcv2psql" => hive2Psql(ohlcvTableName)
       case "macd2psql" => hive2Psql(macdTableName)
@@ -137,6 +152,17 @@ object CurrencyJob {
     spark.read.json(path = rawDir)
       .huobi2Ohlcv(symbol) // raw -> ohlcv
       .write.mode(SaveMode.Overwrite).saveAsTable(ohlcvTableName)
+  }
+
+  /**
+   * Raw hdfs -> csv ohlcv hdfs data mart
+   */
+  def raw2Csv(): Unit = {
+    val ohlcvDir = s"$dataMartsDir/${symbol}_${interval}"
+    log.info(s"Transform $rawDir to $ohlcvDir table")
+    spark.read.json(path = rawDir)
+      .huobi2Ohlcv(symbol) // raw -> ohlcv
+      .write.mode(SaveMode.Overwrite).csv(ohlcvDir)
   }
 
   /**
