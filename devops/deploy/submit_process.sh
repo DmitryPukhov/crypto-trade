@@ -1,5 +1,5 @@
 
-jobNames=$@
+jobNames=${@:-"raw2ohlcv,ohlcv2macd,ohlcv2psql,ohlcv2csv,macd2psql,ohlcv2click,macd2click,ohlcv2mongo,macd2mongo"}
 echo "Jobs to run: $jobNames"
 
 yc dataproc job create-spark \

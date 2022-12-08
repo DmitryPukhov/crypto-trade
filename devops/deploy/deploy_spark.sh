@@ -13,6 +13,7 @@ set -e
 # Build the jar, copy to current folder
 echo "Build the jar"
 rm -f $jar_path
+rm -r -f $tmp_dir
 mkdir -p $tmp_dir
 cd $scala_code_dir || exit
 sbt clean assembly # Build command

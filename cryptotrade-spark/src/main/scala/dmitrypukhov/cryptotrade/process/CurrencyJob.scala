@@ -59,8 +59,10 @@ object CurrencyJob {
 
     val jobNames: Seq[String] = if (args.nonEmpty)
       args.flatMap(arg => arg.split("\\s*,\\s*"))
-    else
-      defaultProcessSeq //.orElse(defaultProcessSeq)
+    else {
+      log.info(f"Jobs are not set, using default sequence $defaultProcessSeq")
+      defaultProcessSeq
+    } //.orElse(defaultProcessSeq)
 
     log.info(s"Jobs to run: ${jobNames.mkString(",")}")
     // Run jobs one by one

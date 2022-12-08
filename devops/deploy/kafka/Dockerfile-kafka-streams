@@ -24,4 +24,5 @@ COPY .ssh/client.truststore.jks /opt/cryptotrade/kafka/.ssh/client.truststore.jk
 
 # Run kafka connect
 WORKDIR /opt/cryptotrade/kafka
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/cryptotrade/kafka
 ENTRYPOINT java -cp cryptotrade-kafka-1.0-SNAPSHOT.jar dmitrypukhov.cryptotrade.kafka.streams.binance.RawBinance2BidAsk
