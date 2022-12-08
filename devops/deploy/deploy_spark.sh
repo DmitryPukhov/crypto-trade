@@ -6,7 +6,8 @@ jar_name=cryptotrade-spark-assembly-0.1.0-SNAPSHOT.jar
 jar_path="$tmp_dir/$jar_name"
 app_properties_path="$tmp_dir/application.properties"
 scala_code_dir=../../cryptotrade-spark
-cloud_dir=s3://dmitrypukhov-cryptotrade/app/
+cloud_dir=s3://dmitrypukhov-cryptotrade/app
+cloud_jar_path="$cloud_dir/$jar_name"
 ch_ssh_path=../.ssh/ch.CA.pem
 
 set -e
@@ -54,4 +55,5 @@ zip -j $jar_path $ch_ssh_path
 
 # Copy the jar to the cloud
 echo "Copy $jar_path to $cloud_dir"
-s3cmd put -f $jar_path $cloud_dir
+s3cmd rm -f $cloud_jar_path
+s3cmd put -f $jar_path $cloud_jar_path

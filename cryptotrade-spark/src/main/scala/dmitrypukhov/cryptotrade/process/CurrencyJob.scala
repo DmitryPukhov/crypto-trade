@@ -43,7 +43,7 @@ object CurrencyJob {
     "raw2ohlcv",
     "ohlcv2macd",
     "ohlcv2psql",
-    "ohlcv2csv",
+    "raw2csv",
     "macd2psql",
     "ohlcv2click",
     "macd2click",
@@ -57,9 +57,10 @@ object CurrencyJob {
     // Set database
     AppTool.ensureHiveDb
 
-    val jobNames: Seq[String] = if (args.nonEmpty)
+    val jobNames: Seq[String] = if (args.nonEmpty) {
+      log.info("Got job from args")
       args.flatMap(arg => arg.split("\\s*,\\s*"))
-    else {
+    } else {
       log.info(f"Jobs are not set, using default sequence $defaultProcessSeq")
       defaultProcessSeq
     } //.orElse(defaultProcessSeq)
