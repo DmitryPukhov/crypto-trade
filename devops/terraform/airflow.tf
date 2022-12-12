@@ -50,7 +50,6 @@ resource "yandex_compute_instance" "vm-airflow" {
   platform_id = "standard-v1"
   zone        = local.hadoop_zone_id
 
-
   resources {
     cores  = 2
     memory = 4
@@ -71,7 +70,8 @@ resource "yandex_compute_instance" "vm-airflow" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file(var.hadoop_public_key_file)}"
+
+    ssh-keys = "ubuntu:${file(var.airflow_public_key_file)}"
   }
 }
 
