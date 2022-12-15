@@ -53,5 +53,4 @@ with DAG(dag_id="batch_currency_import",
         task_id="delete_hadoop_cluster", trigger_rule=TriggerRule.ALL_DONE
     )
 
-#create_cluster >> currency_import_spark_job >> delete_cluster
-create_cluster >> currency_import_spark_job
+create_cluster >> currency_import_spark_job >> delete_cluster
