@@ -7,6 +7,8 @@ from AppTool import AppTool
 from huobi.client.market import MarketClient
 from pyspark.sql import SparkSession
 
+from cfg.app_conf import app_conf
+
 
 class CurrencyImport:
     """
@@ -16,6 +18,7 @@ class CurrencyImport:
     def __init__(self):
         AppTool.init_logger()
         self.conf = AppTool.read_config()
+        self.conf.update(app_conf)
         self.max_attempts = 3
         self.raw_dir = self.conf["dmitrypukhov.cryptotrade.data.raw.dir"]
 
