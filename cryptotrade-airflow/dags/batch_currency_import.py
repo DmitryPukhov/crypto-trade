@@ -45,7 +45,7 @@ with DAG(dag_id="batch_currency_import",
     # Import
     currency_import_spark_job = DataprocCreatePysparkJobOperator(
         task_id="batch_currency_import",
-        main_python_file_uri=f"{app_dir}/cryptotrade-pyspark/input/CurrencyImport.py",
+        main_python_file_uri=f"{app_dir}/cryptotrade-pyspark/cryptotrade-pyspark/input/CurrencyImport.py",
         python_file_uris=[f"{app_dir}/cryptotrade-pyspark.zip", f"{app_dir}/cryptotrade_libs.zip"]
     )
 
