@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-
 from airflow import DAG
 from airflow.providers.yandex.operators.yandexcloud_dataproc import (
     DataprocCreateClusterOperator,
@@ -8,30 +7,31 @@ from airflow.providers.yandex.operators.yandexcloud_dataproc import (
     DataprocDeleteClusterOperator,
 )
 from airflow.utils.trigger_rule import TriggerRule
-
 from AppTool import AppTool
+from CloudTool import CloudTool
 
 # Read config
 cfg_path = ["/home/airflow/dags/cfg/application.defaults.conf", "/home/airflow/dags/cfg/application.conf"]
 cfg = AppTool.read_config(*cfg_path)
+logging.info(f"Loaded config: {cfg}")
 
-#ToDo: remove hard code
-sa_hadoop_id = "aje0m5sq60bhdt702rrc"
+# Read service account id
+cloud_tool = CloudTool(token=cfg["dmitrypukhov.cryptotrade.token"])
+sa_hadoop_id = cloud_tool.get_sa_id("cryptotrade-hadoop")
+logging.info(f"Got hadoop service account id: {sa_hadoop_id}")
 
-
+# Get parameters from config
 bucket = cfg["dmitrypukhov.cryptotrade.bucket"]
 app_dir = cfg["dmitrypukhov.cryptotrade.app_dir"]
-zone_id=cfg["dmitrypukhov.cryptotrade.hadoop.zone_id"]
-# todo: change to pub key file path
-ssh_pub_key=cfg["dmitrypukhov.cryptotrade.hadoop.ssh_pub_key"]
-cluster_name=cfg["dmitrypukhov.cryptotrade.hadoop.cluster_name"]
-logging.info("Loaded config: $cfg")
+zone_id = cfg["dmitrypukhov.cryptotrade.hadoop.zone_id"]
+ssh_pub_key = cfg["dmitrypukhov.cryptotrade.hadoop.ssh_pub_key"]
+cluster_name = cfg["dmitrypukhov.cryptotrade.hadoop.cluster_name"]
+
 
 with DAG(dag_id="batch_currency_import",
          start_date=datetime(2021, 1, 1),
          # schedule_interval="@hourly",
          catchup=False) as dag:
-
     create_cluster = DataprocCreateClusterOperator(
         task_id='create__hadoop_cluster',
         cluster_name=cluster_name,
@@ -53,4 +53,5 @@ with DAG(dag_id="batch_currency_import",
         task_id="delete_hadoop_cluster", trigger_rule=TriggerRule.ALL_DONE
     )
 
+# Workflow: create cluster - job - delete cluster
 create_cluster >> currency_import_spark_job >> delete_cluster

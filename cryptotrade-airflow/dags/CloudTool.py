@@ -19,6 +19,9 @@ import yandex.cloud.dataproc.v1.subcluster_service_pb2 as subcluster_service_pb
 import yandex.cloud.dataproc.v1.subcluster_service_pb2_grpc as subcluster_service_grpc_pb
 from yandex.cloud.resourcemanager.v1.folder_service_pb2 import ListFoldersRequest
 from yandex.cloud.resourcemanager.v1.folder_service_pb2_grpc import FolderServiceStub
+from yandex.cloud.iam.v1.service_account_service_pb2 import ListServiceAccountsRequest
+from yandex.cloud.iam.v1.service_account_service_pb2_grpc import ServiceAccountServiceStub
+from AppTool import AppTool
 
 
 class CloudTool:
@@ -57,11 +60,19 @@ class CloudTool:
         clusters = self.sdk.client(cluster_service_grpc_pb.ClusterServiceStub).List(request).clusters
         return next(iter([c.id for c in clusters if c.name == cluster_name]), None)
 
+    def get_sa_id(self, name: str) -> str:
+        request = ListServiceAccountsRequest(folder_id=self.folder_id)
+        accounts = self.sdk.client(ServiceAccountServiceStub).List(request).service_accounts
+        return next(iter([a.id for a in accounts if a.name == name]), None)
 
-############# Debug main #####################
+
 if __name__ == "__main__":
-    tool = CloudTool()
+    cfg = AppTool.read_config()
+    tool = CloudTool(token=cfg["dmitrypukhov.cryptotrade.token"])
     cluster_id = tool.get_cluster_id(cluster_name=tool.hadoop_cluster_name)
     print(f"Cluster id: {cluster_id}")
+    sa_id = tool.get_sa_id("cryptotrade-hadoop")
+    print(f"cryptotrade-hadoop service account id: {sa_id}")
+
     # print(f"Cloud id: {CloudTool().get_cloud_id()}")
     # print(f"Folder id: {CloudTool().get_folder_id()}")
