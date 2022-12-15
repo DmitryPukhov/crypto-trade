@@ -2,18 +2,19 @@ import logging
 import logging.config
 import os
 import yaml
-from cfg.app_conf import app_conf
+#from cfg.app_conf import app_conf
 
 
 class AppTool:
     @staticmethod
-    def read_config():
+    def read_config(*extrapaths):
         """
-        Set up logging system from log.conf files
+        Read configuration from config files
         """
-        cfgpaths = ["cfg/application.defaults.conf", "cfg/application.dev.conf", "cfg/application.conf"]
-        print(f"Init logging from {cfgpaths}")
-        config = app_conf
+        cfgpaths = ["cfg/application.defaults.conf", "cfg/application.conf", "cfg/application.dev.conf"] + list(extrapaths)
+        print(f"Reading config from {cfgpaths}")
+        #config = app_conf
+        config = {}
         for cfgpath in cfgpaths:
             if os.path.exists(cfgpath):
                 with open(cfgpath) as cur_cfg:

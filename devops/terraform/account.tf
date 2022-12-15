@@ -17,21 +17,25 @@ resource "yandex_resourcemanager_folder_iam_binding" "iam-mdb-dataproc-agent" {
   folder_id = var.folder_id
   role      = "mdb.dataproc.agent"
   members   = [
-    "serviceAccount:${yandex_iam_service_account.sa-hadoop.id}"
+    "serviceAccount:${yandex_iam_service_account.sa-hadoop.id}",
+    "serviceAccount:${yandex_iam_service_account.sa-airflow.id}"
   ]
 }
 resource "yandex_resourcemanager_folder_iam_binding" "iam-dataproc-agent" {
   folder_id = var.folder_id
   role      = "dataproc.agent"
   members   = [
-    "serviceAccount:${yandex_iam_service_account.sa-hadoop.id}"
+    "serviceAccount:${yandex_iam_service_account.sa-hadoop.id}",
+    "serviceAccount:${yandex_iam_service_account.sa-airflow.id}"
   ]
 }
 resource "yandex_resourcemanager_folder_iam_binding" "iam-editor" {
   folder_id = var.folder_id
   role      = "editor"
   members   = [
-    "serviceAccount:${yandex_iam_service_account.sa-hadoop.id}", "serviceAccount:${yandex_iam_service_account.sa-k8s.id}"
+    "serviceAccount:${yandex_iam_service_account.sa-hadoop.id}",
+    "serviceAccount:${yandex_iam_service_account.sa-k8s.id}",
+    "serviceAccount:${yandex_iam_service_account.sa-airflow.id}"
   ]
 }
 

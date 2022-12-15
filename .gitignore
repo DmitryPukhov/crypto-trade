@@ -24,6 +24,7 @@ terraform.tfstate.backup
 client.truststore.jks
 
 *.properties.template
+devops/deploy/airflow/application.conf.template
 devops/deploy/application.properties.template
 devops/deploy/application.properties
 devops/deploy/tmp

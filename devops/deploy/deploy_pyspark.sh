@@ -3,6 +3,7 @@
 #############################################################################
 app_dir=../../cryptotrade-pyspark
 tmp_dir=./tmp/cryptotrade-pyspark
+common_module=../../cryptotrade-pycommon
 tmp_app_dir=$tmp_dir/app
 cloud_dir=s3://dmitrypukhov-cryptotrade/app/cryptotrade-pyspark
 rm -r $tmp_dir
@@ -12,6 +13,10 @@ mkdir -p $tmp_dir
 echo "Copy $app_dir to $tmp_app_dir"
 cp -r $app_dir $tmp_app_dir
 
+echo "Copy common pytools to $tmp_app_dir"
+cp -r -f $common_module/* $tmp_app_dir/
+
+echo "Delete unnecessary files from $tmp_app_dir"
 # Remove not required files
 rm -r $tmp_app_dir/__pycache__
 rm -r $tmp_app_dir/*/__pycache__
