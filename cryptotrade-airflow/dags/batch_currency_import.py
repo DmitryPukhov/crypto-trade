@@ -27,7 +27,6 @@ zone_id = cfg["dmitrypukhov.cryptotrade.hadoop.zone_id"]
 ssh_pub_key = cfg["dmitrypukhov.cryptotrade.hadoop.ssh_pub_key"]
 cluster_name = cfg["dmitrypukhov.cryptotrade.hadoop.cluster_name"]
 
-
 with DAG(dag_id="batch_currency_import",
          start_date=datetime(2021, 1, 1),
          # schedule_interval="@hourly",
@@ -46,7 +45,8 @@ with DAG(dag_id="batch_currency_import",
     currency_import_spark_job = DataprocCreatePysparkJobOperator(
         task_id="batch_currency_import",
         main_python_file_uri=f"{app_dir}/cryptotrade-pyspark/cryptotrade-pyspark/input/CurrencyImport.py",
-        python_file_uris=[f"{app_dir}/cryptotrade-pyspark.zip", f"{app_dir}/cryptotrade_libs.zip"]
+        python_file_uris=[f"{app_dir}/cryptotrade-pyspark/cryptotrade-pyspark.zip",
+                          f"{app_dir}/cryptotrade-pyspark/cryptotrade_libs.zip"]
     )
 
     delete_cluster = DataprocDeleteClusterOperator(
