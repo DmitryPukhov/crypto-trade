@@ -1,12 +1,9 @@
 import logging
 import sys
-#sys.path.insert(1, "../../cryptotrade-pycommon")
-
 from huobi.constant import CandlestickInterval
 from AppTool import AppTool
 from huobi.client.market import MarketClient
 from pyspark.sql import SparkSession
-
 from cfg.app_conf import app_conf
 
 
@@ -20,7 +17,6 @@ class BatchHuobiImport:
         AppTool.init_logger()
         self.conf = app_conf
         self.conf.update(AppTool.read_config())
-        #self.max_attempts = 3
         self.raw_dir = self.conf["dmitrypukhov.cryptotrade.data.raw.dir"]
 
     def get_candles_huobi(self, symbol: str, interval: str):

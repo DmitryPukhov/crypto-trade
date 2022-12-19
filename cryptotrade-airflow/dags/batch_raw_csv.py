@@ -13,7 +13,6 @@ from CloudTool import CloudTool
 # Read config
 cfg_path = ["/home/airflow/dags/cfg/application.defaults.conf", "/home/airflow/dags/cfg/application.conf"]
 cfg = AppTool.read_config(*cfg_path)
-logging.info(f"Loaded config: {cfg}")
 app_dir = cfg["dmitrypukhov.cryptotrade.app_dir"]
 cloud_tool = CloudTool(token=cfg["dmitrypukhov.cryptotrade.token"])
 
