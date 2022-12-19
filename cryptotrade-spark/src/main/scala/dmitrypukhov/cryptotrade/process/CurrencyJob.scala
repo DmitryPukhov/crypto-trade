@@ -54,8 +54,6 @@ object CurrencyJob {
    * Transform raw data, fill in 2 data marts: candles and macd
    */
   def main(args: Array[String]): Unit = {
-    // Set database
-    AppTool.ensureHiveDb
 
     val jobNames: Seq[String] = if (args.nonEmpty) {
       log.info("Got job from args")
@@ -66,6 +64,8 @@ object CurrencyJob {
     } //.orElse(defaultProcessSeq)
 
     log.info(s"Jobs to run: ${jobNames.mkString(",")}")
+    // Set database
+    //AppTool.ensureHiveDb
     // Run jobs one by one
     jobNames.foreach(runJob)
   }

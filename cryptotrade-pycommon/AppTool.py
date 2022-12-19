@@ -12,7 +12,7 @@ class AppTool:
         Read configuration from config files
         """
         cfgpaths = ["cfg/application.defaults.conf", "cfg/application.conf", "cfg/application.dev.conf"] + list(extrapaths)
-        print(f"Reading config from {cfgpaths}")
+        print("Reading config from {}".format(cfgpaths))
         #config = app_conf
         config = {}
         for cfgpath in cfgpaths:
@@ -20,7 +20,7 @@ class AppTool:
                 with open(cfgpath) as cur_cfg:
                     config.update(yaml.safe_load(cur_cfg))
             else:
-                print(f"{cfgpath} does not exist. It can be ok.")
+                print("{} does not exist. It can be ok.".format(cfgpath))
         # Enviroment variabless
         config.update(os.environ)
         logging.info("Config initialized")
@@ -33,11 +33,11 @@ class AppTool:
         Set up logging system from log.conf files
         """
         cfgpaths = ["cfg/log.defaults.conf", "cfg/log.conf", "cfg/log.dev.conf"]
-        print(f"Init logging from {cfgpaths}")
+        print("Init logging from {}".format(cfgpaths))
         logging.basicConfig(level="INFO")
         for cfgpath in cfgpaths:
             if os.path.exists(cfgpath):
                 logging.config.fileConfig(cfgpath)
             else:
-                print(f"{cfgpath} does not exist. It can be ok.")
+                print("{} does not exist. It can be ok.".format(cfgpath))
         logging.info("Logging initialized")

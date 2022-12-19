@@ -2,7 +2,7 @@ app_dir="s3a://dmitrypukhov-cryptotrade/app/cryptotrade-pyspark"
 yc dataproc job create-pyspark \
    --cluster-name cryptotrade-hadoop \
    --name="currency_import" \
-   --main-python-file-uri="$app_dir/cryptotrade-pyspark/input/CurrencyImport.py" \
+   --main-python-file-uri="$app_dir/cryptotrade-pyspark/input/BatchHuobiImport.py" \
    --python-file-uris="$app_dir/cryptotrade-pyspark.zip,$app_dir/cryptotrade_libs.zip" \
    --properties spark.submit.deployMode=client \
    --properties spark.submit.master=local

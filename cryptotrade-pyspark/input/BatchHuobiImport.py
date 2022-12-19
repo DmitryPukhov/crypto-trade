@@ -10,16 +10,17 @@ from pyspark.sql import SparkSession
 from cfg.app_conf import app_conf
 
 
-class CurrencyImport:
+class BatchHuobiImport:
     """
     Import btc usdt m1 from stock exchange to raw layer
     """
 
     def __init__(self):
+        print(f"sys.version: {sys.version}")
         AppTool.init_logger()
         self.conf = app_conf
         self.conf.update(AppTool.read_config())
-        self.max_attempts = 3
+        #self.max_attempts = 3
         self.raw_dir = self.conf["dmitrypukhov.cryptotrade.data.raw.dir"]
 
     def get_candles_huobi(self, symbol: str, interval: str):
@@ -50,4 +51,4 @@ class CurrencyImport:
 
 
 if __name__ == '__main__':
-    CurrencyImport().run()
+    BatchHuobiImport().run()
