@@ -1,5 +1,6 @@
 src_dags=../../../cryptotrade-airflow/dags
 dst_dags=/home/airflow/dags
+dst_airflow_cfg=/etc/airflow/airflow.cfg
 tmp_dir=./tmp
 tmp_dags=$tmp_dir/dags
 tmp_pylibs=$tmp_dir/pylibs
@@ -47,11 +48,16 @@ mv $tmp_dir/$zip_file $tmp_dir/dags
 # Copy application.conf to tmp dir
 echo "Copy application.conf.template to $tmp_dir/dags/cfg"
 cp -f application.conf.template $tmp_dir/dags/cfg/application.conf
+
 # Copy to remote airflow server
 airflow_address=$(yc compute instance list | grep airflow | awk '{ print $10}')
 echo "Got airflow address: $airflow_address"
 dst_uri=ubuntu@$airflow_address:$dst_dags
 echo "Airflow dags uri: $dst_uri"
-
 echo "Copy dags from $tmp_dir to $dst_uri"
 rsync -r --rsync-path="sudo rsync" $tmp_dir/dags/ $dst_uri
+
+# Copy airflow.cfg to remote airflow server
+dst_airflow_cfg_uri="ubuntu@$airflow_address:$dst_airflow_cfg"
+echo "Copy ariflow.cfg to $dst_airflow_cfg_uri"
+rsync --rsync-path="sudo rsync" airflow.cfg $dst_airflow_cfg_uri
