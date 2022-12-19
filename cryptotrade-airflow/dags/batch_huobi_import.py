@@ -2,6 +2,7 @@ import logging
 import sys
 from datetime import datetime
 from airflow import DAG
+from airflow.operators.python import PythonOperator
 from airflow.providers.yandex.operators.yandexcloud_dataproc import (
     DataprocCreateClusterOperator,
     DataprocCreatePysparkJobOperator,
@@ -10,6 +11,7 @@ from airflow.providers.yandex.operators.yandexcloud_dataproc import (
 from airflow.utils.trigger_rule import TriggerRule
 from AppTool import AppTool
 from CloudTool import CloudTool
+print("python version: ")
 
 # Read config
 cfg_path = ["/home/airflow/dags/cfg/application.defaults.conf", "/home/airflow/dags/cfg/application.conf"]
@@ -32,8 +34,10 @@ print(f"sys.version: {sys.version}")
 
 with DAG(dag_id="batch_huobi_import",
          start_date=datetime(2021, 1, 1),
+         tags=["cryptotrade"],
          # schedule_interval="@hourly",
          catchup=False) as dag:
+
     create_cluster = DataprocCreateClusterOperator(
         task_id='create_hadoop_cluster',
         cluster_name=cluster_name,
@@ -54,12 +58,12 @@ with DAG(dag_id="batch_huobi_import",
         main_python_file_uri=f"{app_dir}/cryptotrade-pyspark/cryptotrade-pyspark/input/BatchHuobiImport.py",
         python_file_uris=[f"{app_dir}/cryptotrade-pyspark/cryptotrade-pyspark.zip",
                           f"{app_dir}/cryptotrade-pyspark/cryptotrade_libs.zip"],
-        properties={"spark.submit.master": "yarn", "spark.submit.deployMode": "cluster"}
+        properties={"spark.pyspark.python": "python3"}
     )
-
+    #
     delete_cluster = DataprocDeleteClusterOperator(
         task_id="delete_hadoop_cluster", trigger_rule=TriggerRule.ALL_DONE
     )
 
 # Workflow: create cluster - job - delete cluster
-create_cluster >> currency_import_spark_job #>> delete_cluster
+create_cluster >> currency_import_spark_job >> delete_cluster

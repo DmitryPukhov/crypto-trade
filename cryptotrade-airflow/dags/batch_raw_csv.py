@@ -19,6 +19,7 @@ cloud_tool = CloudTool(token=cfg["dmitrypukhov.cryptotrade.token"])
 
 with DAG(dag_id="batch_raw_csv",
          start_date=datetime(2021, 1, 1),
+         tags=["cryptotrade"],
          catchup=False) as dag:
     create_cluster = DataprocCreateClusterOperator(
         task_id='create_hadoop_cluster',
