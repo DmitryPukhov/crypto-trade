@@ -65,7 +65,7 @@ object CurrencyJob {
 
     log.info(s"Jobs to run: ${jobNames.mkString(",")}")
     // Set database
-    //AppTool.ensureHiveDb
+    AppTool.ensureHiveDb
     // Run jobs one by one
     jobNames.foreach(runJob)
   }

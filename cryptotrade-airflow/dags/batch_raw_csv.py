@@ -9,7 +9,7 @@ with DAG(dag_id="batch_raw_csv",
          tags=["cryptotrade"],
          catchup=False) as dag:
     # Create hadoop cluster
-    create_cluster = DagTool.create_cluster_operator(services=["SPARK", "YARN"])
+    create_cluster = DagTool.create_cluster_operator(services=["SPARK", "YARN", "HIVE"])
 
     # Single job
     job = DagTool.spark_currency_job(args="raw2csv")

@@ -16,8 +16,8 @@ with DAG(dag_id="batch_raw_ohlcv_macd",
     ohlcv2macd = DagTool.spark_currency_job(args="ohlcv2macd")
 
     # Delete cluster at the end
-    delete_cluster = DataprocDeleteClusterOperator(
-        task_id="delete_hadoop_cluster", trigger_rule=TriggerRule.ALL_DONE)
+    # delete_cluster = DataprocDeleteClusterOperator(
+    #     task_id="delete_hadoop_cluster", trigger_rule=TriggerRule.ALL_DONE)
 
     # Dag workflow
-    create_cluster >> raw2ohlcv >> ohlcv2macd >> delete_cluster
+    create_cluster >> raw2ohlcv >> ohlcv2macd #>> delete_cluster
