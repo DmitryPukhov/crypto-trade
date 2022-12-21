@@ -153,7 +153,7 @@ object CurrencyJob {
     log.info(s"Transform $rawDir to $macdTableName table")
     spark.read.json(path = rawDir)
       .huobi2Ohlcv(symbol) // raw -> ohlcv
-      .write.mode(SaveMode.Append).saveAsTable(ohlcvTableName)
+      .write.mode(SaveMode.Overwrite).saveAsTable(ohlcvTableName)
   }
 
   /**
@@ -164,7 +164,7 @@ object CurrencyJob {
     log.info(s"Transform $rawDir to $ohlcvDir table")
     spark.read.json(path = rawDir)
       .huobi2Ohlcv(symbol) // raw -> ohlcv
-      .write.mode(SaveMode.Append).csv(ohlcvDir)
+      .write.mode(SaveMode.Overwrite).csv(ohlcvDir)
   }
 
   /**
@@ -175,6 +175,6 @@ object CurrencyJob {
     spark
       .read.table(ohlcvTableName)
       .toMacd(signal, fast, slow) // ohlcv -> macd indicator
-      .write.mode(SaveMode.Append).saveAsTable(macdTableName)
+      .write.mode(SaveMode.Overwrite).saveAsTable(macdTableName)
   }
 }
