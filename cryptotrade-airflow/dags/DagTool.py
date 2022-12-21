@@ -66,11 +66,12 @@ class DagTool:
         )
 
     @staticmethod
-    def spark_currency_job(args: str):
+    def spark_currency_job(args: str, properties: {} = None):
         return DataprocCreateSparkJobOperator(
             task_id=args,
             main_jar_file_uri=f"{DagTool.app_dir}/cryptotrade-spark-assembly-0.1.0-SNAPSHOT.jar",
             main_class="dmitrypukhov.cryptotrade.process.CurrencyJob",
+            properties=properties,
             args=[args]
         )
 
