@@ -43,5 +43,5 @@ ks_image_tag="cr.yandex/$registry_id/cryptotrade-kafka-streams"
 sudo docker build -t "$ks_image_tag" -f Dockerfile-kafka-streams .
 
 echo "Pushing docker images"
-sudo docker push "$image_tag"
-sudo docker push "$ks_image_tag"
+docker push "$kc_image_tag"
+docker push "$ks_image_tag"
