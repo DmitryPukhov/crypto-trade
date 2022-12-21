@@ -45,3 +45,9 @@ sudo docker build -t "$ks_image_tag" -f Dockerfile-kafka-streams .
 echo "Pushing docker images"
 docker push "$kc_image_tag"
 docker push "$ks_image_tag"
+
+echo "Running container $kc_image_tag"
+kubectl run "cryptotrade-kafka-binance-connector" --image "$kc_image_tag"
+
+echo "Running container $ks_image_tag"
+kubectl run "cryptotrade-kafka-streams" --image "$ks_image_tag"
