@@ -1,6 +1,6 @@
 from datetime import datetime
 from airflow import DAG
-from airflow.providers.yandex.operators.yandexcloud_dataproc import DataprocDeleteClusterOperator
+from airflow.operators.python import PythonOperator
 from airflow.utils.trigger_rule import TriggerRule
 from DagTool import DagTool
 
@@ -8,15 +8,14 @@ with DAG(dag_id="batch_raw_csv",
          start_date=datetime(2021, 1, 1),
          tags=["cryptotrade"],
          catchup=False) as dag:
-    # Create hadoop cluster
-    create_cluster = DagTool.create_cluster_operator(services=["SPARK", "YARN", "HIVE"])
-
+    # Start the cluster
+    ensure_cluster_running = PythonOperator(task_id="ensure_cluster_running",
+                                            python_callable=DagTool.ensure_cluster_running)
     # Single job
     job = DagTool.spark_currency_job(args="raw2csv")
 
-    # Delete cluster at the end
-    delete_cluster = DataprocDeleteClusterOperator(
-        task_id="delete_hadoop_cluster", trigger_rule=TriggerRule.ALL_DONE)
-
+    # Stop cluster
+    stop_cluster = PythonOperator(task_id="stop_cluster", python_callable=DagTool.stop_cluster,
+                                  trigger_rule=TriggerRule.ALL_DONE)
     # Dag workflow
-    create_cluster >> job >> delete_cluster
+    ensure_cluster_running >> job >> stop_cluster

@@ -1,26 +1,13 @@
-import sys
-
-import yandex.cloud.resourcemanager.v1.folder_pb2
-import yandex
-import yandexcloud
 import logging
-
-from yandex.cloud.resourcemanager.v1.cloud_service_pb2 import ListCloudsRequest
-from yandex.cloud.resourcemanager.v1.cloud_service_pb2_grpc import CloudServiceStub
-import yandex.cloud.dataproc.v1.common_pb2 as common_pb
-import yandex.cloud.dataproc.v1.cluster_pb2 as cluster_pb
 import yandex.cloud.dataproc.v1.cluster_service_pb2 as cluster_service_pb
 import yandex.cloud.dataproc.v1.cluster_service_pb2_grpc as cluster_service_grpc_pb
-import yandex.cloud.dataproc.v1.job_pb2 as job_pb
-import yandex.cloud.dataproc.v1.job_service_pb2 as job_service_pb
-import yandex.cloud.dataproc.v1.job_service_pb2_grpc as job_service_grpc_pb
-import yandex.cloud.dataproc.v1.subcluster_pb2 as subcluster_pb
-import yandex.cloud.dataproc.v1.subcluster_service_pb2 as subcluster_service_pb
-import yandex.cloud.dataproc.v1.subcluster_service_pb2_grpc as subcluster_service_grpc_pb
-from yandex.cloud.resourcemanager.v1.folder_service_pb2 import ListFoldersRequest
-from yandex.cloud.resourcemanager.v1.folder_service_pb2_grpc import FolderServiceStub
+import yandexcloud
 from yandex.cloud.iam.v1.service_account_service_pb2 import ListServiceAccountsRequest
 from yandex.cloud.iam.v1.service_account_service_pb2_grpc import ServiceAccountServiceStub
+from yandex.cloud.resourcemanager.v1.cloud_service_pb2 import ListCloudsRequest
+from yandex.cloud.resourcemanager.v1.cloud_service_pb2_grpc import CloudServiceStub
+from yandex.cloud.resourcemanager.v1.folder_service_pb2 import ListFoldersRequest
+from yandex.cloud.resourcemanager.v1.folder_service_pb2_grpc import FolderServiceStub
 from AppTool import AppTool
 
 

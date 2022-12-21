@@ -6,11 +6,9 @@ from airflow.providers.yandex.operators.yandexcloud_dataproc import (
     DataprocCreateSparkJobOperator
 )
 from yandex.cloud.dataproc.v1.cluster_pb2 import Cluster
+from yandex.cloud.dataproc.v1.cluster_service_pb2 import GetClusterRequest
 from yandex.cloud.dataproc.v1.cluster_service_pb2 import StartClusterRequest, StopClusterRequest
 from yandex.cloud.dataproc.v1.cluster_service_pb2_grpc import ClusterServiceStub
-from yandex.cloud.dataproc.v1.cluster_service_pb2 import GetClusterRequest
-from yandex.cloud.dataproc.v1.cluster_service_pb2_grpc import ClusterServiceStub
-
 from AppTool import AppTool
 from CloudTool import CloudTool
 
@@ -24,7 +22,7 @@ class DagTool:
     logging.info(f"Loaded config: {cfg}")
     cloud_tool = CloudTool(token=cfg["dmitrypukhov.cryptotrade.token"])
     app_dir = cfg["dmitrypukhov.cryptotrade.app_dir"]
-    cluster_name="cryptotrade-hadoop"
+    cluster_name = "cryptotrade-hadoop"
 
     @staticmethod
     def ensure_cluster_running(**kwargs):
@@ -39,7 +37,7 @@ class DagTool:
         else:
             logging.info(f"Cluster {DagTool.cluster_name} is already running.")
         kwargs['task_instance'].xcom_push(key='cluster_id', value=cluster_id)
-        #context['task_instance'].xcom_push(key='yandexcloud_connection_id', value=self.yandex_conn_id)
+        # context['task_instance'].xcom_push(key='yandexcloud_connection_id', value=self.yandex_conn_id)
 
     @staticmethod
     def stop_cluster():
