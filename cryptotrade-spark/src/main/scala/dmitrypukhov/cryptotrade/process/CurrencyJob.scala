@@ -39,7 +39,7 @@ object CurrencyJob {
 
   //  /** Map jobname -> job func, keys are in default execution order */
   //  val jobMap: Map[String, () => Unit] = ListMap("raw2ohlcv" -> raw2Ohlcv, "ohlcv2macd" -> ohlcv2Macd, "ohlcv2psql" -> ohlcv2Psql, "macd2psql" -> macd2Psql, "ohlcv2click" -> ohlcv2Click, "macd2click" -> macd2Click)
-  val defaultProcessSeq = Seq(
+  private val defaultProcessSeq = Seq(
     "raw2ohlcv",
     "ohlcv2macd",
     "ohlcv2psql",
@@ -120,7 +120,7 @@ object CurrencyJob {
     props.put("compression", "false")
     spark.read.table(tableName)
       .write
-      .mode(SaveMode.Overwrite)
+      .mode(SaveMode.Append)
       .jdbc(url = jdbcUri, table = tableName, connectionProperties = props)
   }
 
@@ -132,7 +132,6 @@ object CurrencyJob {
 
     // Set up properties
     val props = new Properties()
-    //props.put("Driver", "com.clickhouse.jdbc.ClickHouseDriver")
     props.put("Driver", "ru.yandex.clickhouse.ClickHouseDriver")
     spark.conf.getAll.filter(_._1.startsWith("dmitrypukhov.cryptotrade.data.mart.currency.jdbc.click"))
       .foreach(t => props.put(t._1.split("\\.").last, t._2)) // Filter props from config, set them up
@@ -142,7 +141,7 @@ object CurrencyJob {
     // Read Hive, wite postgres
     spark.read.table(tableName)
       .write
-      .mode(SaveMode.Overwrite)
+      .mode(SaveMode.Append)
       .option("createTableOptions", "ENGINE=Log()") // Clickhouse specific option
       .jdbc(url = jdbcUri, table = tableName, connectionProperties = props)
   }
@@ -154,18 +153,18 @@ object CurrencyJob {
     log.info(s"Transform $rawDir to $macdTableName table")
     spark.read.json(path = rawDir)
       .huobi2Ohlcv(symbol) // raw -> ohlcv
-      .write.mode(SaveMode.Overwrite).saveAsTable(ohlcvTableName)
+      .write.mode(SaveMode.Append).saveAsTable(ohlcvTableName)
   }
 
   /**
    * Raw hdfs -> csv ohlcv hdfs data mart
    */
   def raw2Csv(): Unit = {
-    val ohlcvDir = s"$dataMartsDir/${symbol}_${interval}"
+    val ohlcvDir = s"$dataMartsDir/${symbol}_$interval"
     log.info(s"Transform $rawDir to $ohlcvDir table")
     spark.read.json(path = rawDir)
       .huobi2Ohlcv(symbol) // raw -> ohlcv
-      .write.mode(SaveMode.Overwrite).csv(ohlcvDir)
+      .write.mode(SaveMode.Append).csv(ohlcvDir)
   }
 
   /**
@@ -176,6 +175,6 @@ object CurrencyJob {
     spark
       .read.table(ohlcvTableName)
       .toMacd(signal, fast, slow) // ohlcv -> macd indicator
-      .write.mode(SaveMode.Overwrite).saveAsTable(macdTableName)
+      .write.mode(SaveMode.Append).saveAsTable(macdTableName)
   }
 }

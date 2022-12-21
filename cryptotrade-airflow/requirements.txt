@@ -2,5 +2,5 @@ apache-airflow==2.2.3
 apache-airflow-providers-yandex==2.2.0
 yandexcloud==0.192.0
 yandex==0.0.2
-airflow==0.6
+markupsafe==2.0.1
 
