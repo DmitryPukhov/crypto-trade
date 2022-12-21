@@ -32,6 +32,7 @@ public final class RawBinance2BidAsk {
      * The Streams application as a whole can be launched like any normal Java application that has a `main()` method.
      */
     public static void main(final String[] args) {
+        log.info("Starting Binance stream processing");
 
         // Configure the Streams application.
         final Properties streamsConfiguration = PropertiesUtil.getKafkaConfiguration();
