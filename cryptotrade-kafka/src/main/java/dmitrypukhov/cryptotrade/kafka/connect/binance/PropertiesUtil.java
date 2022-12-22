@@ -7,6 +7,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,13 +38,14 @@ public final class PropertiesUtil {
         CombinedConfiguration config = new CombinedConfiguration(new OverrideCombiner());
 
         // Read application.*.properties in priority order. First - highest priority, last - lowest
-        List<String> propFiles = Arrays.asList("application.dev.properties", "application.default.properties", "application.default.yaml");
+        List<String> propFiles = Arrays.asList("application.dev.properties", "application.properties", "application.default.properties", "application.default.yaml");
         for (String propFilePath : propFiles) {
             try {
                 // Read properties file
                 config.addConfiguration(configs.properties(propFilePath));
+                log.info(String.format("Success reading properties from file %s", propFilePath));
             } catch (/*ConfigurationException | /*IOException | */Exception ex) {
-                log.info(String.format("Cannot read properties from file %s. It can be normal situation. %s", propFilePath, ex.toString()));
+                log.info(String.format("Cannot read properties from file %s. It can be normal situation. %s", propFilePath, ex));
             }
         }
 

@@ -6,6 +6,7 @@ ENV CLASSPATH=/opt/cryptotrade/kafka/*:/usr/share/java/cp-base-new/*
 
 
 # Set up kafka connect plugin
+RUN rm -r -f /opt/cryptotrade
 RUN mkdir -p  /opt/cryptotrade/kafka
 COPY tmp /opt/cryptotrade/kafka
 RUN ls /opt/cryptotrade/kafka
