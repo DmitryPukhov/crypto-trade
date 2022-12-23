@@ -16,13 +16,21 @@ resource "yandex_mdb_clickhouse_cluster" "cryptotrade-clickhouse" {
 
   deletion_protection = false
   clickhouse {
-
+    config {
+      kafka {
+        security_protocol = "SECURITY_PROTOCOL_SASL_SSL"
+        sasl_mechanism    = "SASL_MECHANISM_SCRAM_SHA_512"
+        sasl_username     = var.kafka_user
+        sasl_password     = var.kafka_pwd
+      }
+    }
     resources {
       resource_preset_id = "b3-c1-m4"
       disk_type_id       = "network-hdd"
       disk_size          = 10
     }
   }
+
 
   database {
     name  = "cryptotrade"
