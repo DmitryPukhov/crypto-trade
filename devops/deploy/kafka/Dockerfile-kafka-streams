@@ -26,6 +26,6 @@ COPY .ssh/client.truststore.jks /opt/cryptotrade/kafka/.ssh/client.truststore.jk
 # Run kafka connect
 WORKDIR /opt/cryptotrade/kafka
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/cryptotrade/kafka
-#ENTRYPOINT java -cp ./*:cryptotrade-kafka-1.0-SNAPSHOT.jar dmitrypukhov.cryptotrade.kafka.streams.binance.RawBinance2BidAsk
-#ENTRYPOINT java -cp ./*:/usr/share/java/cp-base-new/*:cryptotrade-kafka-1.0-SNAPSHOT.jar dmitrypukhov.cryptotrade.kafka.streams.binance.RawBinance2BidAsk
-ENTRYPOINT java -cp ./*:/usr/share/java/kafka/*:cryptotrade-kafka-1.0-SNAPSHOT.jar dmitrypukhov.cryptotrade.kafka.streams.binance.RawBinance2BidAsk
+#ENTRYPOINT java -cp ./*:cryptotrade-kafka-1.0-SNAPSHOT.jar dmitrypukhov.cryptotrade.kafka.streams.binance.RawBinance2Price
+#ENTRYPOINT java -cp ./*:/usr/share/java/cp-base-new/*:cryptotrade-kafka-1.0-SNAPSHOT.jar dmitrypukhov.cryptotrade.kafka.streams.binance.RawBinance2Price
+ENTRYPOINT java -cp ./*:/usr/share/java/kafka/*:cryptotrade-kafka-1.0-SNAPSHOT.jar dmitrypukhov.cryptotrade.kafka.streams.binance.RawBinance2Price

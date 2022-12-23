@@ -1,6 +1,5 @@
 package dmitrypukhov.cryptotrade.kafka.streams.binance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dmitrypukhov.cryptotrade.kafka.connect.binance.PropertiesUtil;
@@ -11,22 +10,20 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class RawBinance2BidAsk {
-    private RawBinance2BidAsk() {
+public final class RawBinance2Price {
+    private RawBinance2Price() {
     }
 
-    private static Logger log = LoggerFactory.getLogger(RawBinance2BidAsk.class);
-    private static ObjectMapper mapper = new ObjectMapper();
-    private static TypeReference<Map<String, String>> bidAskTypeRef = new TypeReference<>() {
-    };
-
-    private static String inputTopic = "raw.btcusdt.ticker";
-    private static String outputTopic = "btcusdt.bidask";
+    private static final Logger log = LoggerFactory.getLogger(RawBinance2Price.class);
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final TypeReference<Map<String, String>> bidAskTypeRef = new TypeReference<>() {    };
 
     /**
      * The Streams application as a whole can be launched like any normal Java application that has a `main()` method.
@@ -70,29 +67,37 @@ public final class RawBinance2BidAsk {
      * @param builder StreamsBuilder to use
      */
     static void createStream(final StreamsBuilder builder) {
+        String inputTopic = "raw.btcusdt.ticker";
         final KStream<String, String> textLines = builder.stream(inputTopic);
-        textLines.mapValues(RawBinance2BidAsk::raw2BidAsk).to(outputTopic);
+        String outputTopic = "btcusdt.price";
+        textLines.mapValues(RawBinance2Price::raw2Price).to(outputTopic);
     }
 
-    static Map<String, String> raw2BidAsk(Map<String, String> rawMap) {
+    /**
+     * Extract price and volume from raw data
+     * Raw format: <a href="https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#individual-symbol-ticker-streams">...</a>
+     */
+    static Map<String, String> raw2Price(Map<String, String> rawMap) {
         Map<String, String> processedMap = new HashMap<>();
-        processedMap.put("datetime", LocalDateTime.now().toString());
+        processedMap.put("datetime", LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(rawMap.get("E"))), ZoneId.of("UTC")).toString());
         processedMap.put("symbol", rawMap.get("s"));
-        processedMap.put("bid", rawMap.get("b"));
-        processedMap.put("bidQty", rawMap.get("B"));
-        processedMap.put("ask", rawMap.get("a"));
-        processedMap.put("askQty", rawMap.get("A"));
+        processedMap.put("price", rawMap.get("c"));
+        processedMap.put("volume", rawMap.get("Q"));
+//        processedMap.put("bid", rawMap.get("b"));
+//        processedMap.put("bidQty", rawMap.get("B"));
+//        processedMap.put("ask", rawMap.get("a"));
+//        processedMap.put("askQty", rawMap.get("A"));
         return processedMap;
     }
 
     /**
      * Transform raw binance json string to bid ask
      */
-    static String raw2BidAsk(String rawString) {
-        String out = "";
+    static String raw2Price(String rawString) {
+        String out;
         try {
             Map<String, String> rawMap = mapper.readValue(rawString, bidAskTypeRef);
-            Map<String, String> bidAskMap = raw2BidAsk(rawMap);
+            Map<String, String> bidAskMap = raw2Price(rawMap);
             out = mapper.writeValueAsString(bidAskMap);
 
         } catch (java.io.IOException e) {
