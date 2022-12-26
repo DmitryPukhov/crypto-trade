@@ -42,6 +42,7 @@ cp -f Dockerfile $tmp_dir/
 cd $tmp_dir
 docker build -t "$service_image_tag" .
 cd "$OLDPWD" || exit
+
 docker push "$service_image_tag"
 
 echo "Running container $service_image_tag"
