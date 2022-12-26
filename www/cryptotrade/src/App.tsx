@@ -2,11 +2,11 @@ import React from 'react';
 import logo from './logo.svg';
 import axios, { CancelTokenSource } from 'axios';
 import './App.css';
-import IOhlcv from './types/Ohlcv';
+import ITickerPrice from './types/TickerPrice';
 import { resolveProjectReferencePath } from 'typescript';
 import PriceChart from './pricechart/PriceChart';
 
-const defaultCandles: IOhlcv[] = [];
+const defaultCandles: ITickerPrice[] = [];
 
 function App() {
   const plotly = React.createRef();

@@ -15,11 +15,32 @@
 	<description>Service layer</description>
 	<properties>
 		<java.version>11</java.version>
+		<spring.boot.version>2.7.4</spring.boot.version>
 	</properties>
 	<dependencies>
+<!--		<dependency>-->
+<!--			<groupId>org.postgresql</groupId>-->
+<!--			<artifactId>postgresql</artifactId>-->
+<!--		</dependency>-->
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
+			<!-- please stop using ru.yandex.clickhouse as it's been deprecated -->
+			<groupId>com.clickhouse</groupId>
+			<artifactId>clickhouse-jdbc</artifactId>
+			<version>0.3.2-patch11</version>
+			<!-- use uber jar with all dependencies included, change classifier to http for smaller jar -->
+			<classifier>all</classifier>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.github.pelenthium</groupId>
+			<artifactId>clickhouse-dialect-spring-boot-starter</artifactId>
+			<version>1.1.0</version>
+<!--			<type>pom</type>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -51,6 +72,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.boot.version}</version>
 				<configuration>
 					<excludes>
 						<exclude>

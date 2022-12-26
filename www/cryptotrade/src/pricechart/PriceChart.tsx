@@ -3,7 +3,7 @@ import './pricechart.css'
 import React,{Component} from 'react'
 import Plotly from 'plotly.js'
 import createPlotlyComponent from "react-plotly.js/factory"
-import IOhlcv from '../types/Ohlcv'
+import ITickerPrice from '../types/TickerPrice'
 import { timingSafeEqual } from 'crypto'
 import config from './../app-config.json'
 
@@ -26,23 +26,22 @@ export default class PriceChart extends Component<PriceChartProps>{
   };
   serviceUrl=""
 
-  plotlyDataOf(candles: Array<any>)  {
-      let x=candles.map(candle=>candle.datetime)
-      let y = candles.map(candle=>candle.close)
+  plotlyDataOf(prices: Array<any>)  {
+    
+      let x=prices.map(price=>price.datetime)
+      let y = prices.map(price=>price.price)
       return [{x:x, y:y, mode: "markers", type: "scatter"}]
   }
 
   constructor(props: PriceChartProps) {
     super(props)
-    // todo: parameterise
-    //const serviceUrl="http://localhost:8080/candles/list";
-    this.serviceUrl=`${config.REACT_APP_CRYPTOTRADE_SERVICE_URL}/candles/list`
+     this.serviceUrl=`${config.REACT_APP_CRYPTOTRADE_SERVICE_URL}/btcusdt_price/list`
     console.log(`Service url: ${this.serviceUrl}`)
     console.log(props)
 
     fetch(this.serviceUrl)
     .then(responce=>responce.json())
-    .then((candles:IOhlcv[])=>{
+    .then((candles:ITickerPrice[])=>{
         this.setState({isLoaded: true, items: this.plotlyDataOf(candles), error: null});
     })
     .catch((error)=>{
