@@ -36,9 +36,16 @@ zip -j $jar_path $app_properties_path
 #s3cmd put -f $jar_path $cloud_dir
 
 echo "Build docker image"
+registry_id=$(yc container registry list | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n//g')
+service_image_tag="cr.yandex/$registry_id/cryptotrade-service"
 cp -f Dockerfile $tmp_dir/
 cd $tmp_dir
-docker build -t cryptotrade-service .
+docker build -t "$service_image_tag" .
 cd "$OLDPWD" || exit
+docker push "$service_image_tag"
+
+echo "Running container $service_image_tag"
+kubectl delete pod "cryptotrade-service"
+kubectl run "cryptotrade-service" --image "$service_image_tag"
 
 
