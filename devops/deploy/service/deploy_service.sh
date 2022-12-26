@@ -20,12 +20,13 @@ cd "$OLDPWD" || exit
 cp -f $java_code_dir/target/$jar_name $jar_path
 
 # Set postgres url in application.properties
-pg_host_name=$(yc managed-postgresql host list --cluster-name cryptotrade-psql | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n/ /g')
-pg_host_name=$(echo "$pg_host_name" | xargs)
-pg_host="jdbc:postgresql:\/\/$pg_host_name\:6432\/cryptotrade"
-pg_host_property="spring\.datasource\.url"
-echo "Set $pg_host_property=$pg_host in $app_properties_path"
-sed "s/\($pg_host_property\s*\=\s*\).*/\1${pg_host}/g" application.properties.template > "$app_properties_path"
+db_host_name=$(yc managed-clickhouse host list --cluster-name cryptotrade-clickhouse | awk '{print $2}' | tail -n 3 | sed ':a;N;$!ba;s/\n/ /g')
+db_host_name=$(echo "$db_host_name" | xargs)
+ssl_cert_path="ssl=1\&sslmode\=strict\&sslrootcert\=\/usr\/local\/share\/ca-certificates\/Yandex\/YandexInternalRootCA\.crt"
+db_host="jdbc:clickhouse:\/\/$db_host_name\:8443\/cryptotrade\?$ssl_cert_path"
+db_host_property="spring\.datasource\.url"
+echo "Set $db_host_property=$db_host in $app_properties_path"
+sed "s/\($db_host_property\s*\=\s*\).*/\1${db_host}/g" application.properties.template > "$app_properties_path"
 
 
 # Pack application.properties to the jar
