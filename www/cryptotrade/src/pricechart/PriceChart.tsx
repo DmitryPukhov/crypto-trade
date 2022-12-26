@@ -5,6 +5,7 @@ import Plotly from 'plotly.js'
 import createPlotlyComponent from "react-plotly.js/factory"
 import IOhlcv from '../types/Ohlcv'
 import { timingSafeEqual } from 'crypto'
+import config from './../app-config.json'
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -23,6 +24,7 @@ export default class PriceChart extends Component<PriceChartProps>{
     xaxis:  { autorange: true},
     yaxis:  { autorange: true}
   };
+  serviceUrl=""
 
   plotlyDataOf(candles: Array<any>)  {
       let x=candles.map(candle=>candle.datetime)
@@ -33,10 +35,12 @@ export default class PriceChart extends Component<PriceChartProps>{
   constructor(props: PriceChartProps) {
     super(props)
     // todo: parameterise
-    const serviceUrl="http://localhost:8080/candles/list";
+    //const serviceUrl="http://localhost:8080/candles/list";
+    this.serviceUrl=`${config.REACT_APP_CRYPTOTRADE_SERVICE_URL}/candles/list`
+    console.log(`Service url: ${this.serviceUrl}`)
     console.log(props)
 
-    fetch(serviceUrl)
+    fetch(this.serviceUrl)
     .then(responce=>responce.json())
     .then((candles:IOhlcv[])=>{
         this.setState({isLoaded: true, items: this.plotlyDataOf(candles), error: null});
@@ -50,7 +54,10 @@ export default class PriceChart extends Component<PriceChartProps>{
   render(){
           const { error, isLoaded, items } = this.state;
           if (error) {
-            return <div>Error: {error}</div>;
+            return <div>
+              <div>{this.serviceUrl}</div>
+              <div>Error: {error}</div>
+              </div>;
           } else if (!isLoaded) {
             return <div>Loading...</div>;
           } else { 
